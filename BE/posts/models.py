@@ -15,7 +15,7 @@ class CommunityPost(models.Model):
 
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     title = models.TextField()
-    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
+    category = models.CharField(max_length=14, choices=CATEGORY_CHOICES)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
