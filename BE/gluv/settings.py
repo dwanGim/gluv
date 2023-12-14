@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     # custom app
     'users',
-    'post',
+    'posts',
 ]
 
 MIDDLEWARE = [
