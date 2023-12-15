@@ -2,9 +2,9 @@ from django.db import models
 from teams.models import Team
 
 
-class RecruitmentPost(models.Model):
+class Schedules(models.Model):
     '''
-    모집 게시글 모델
+    일정 모델
 
     Attributes:
         team (ForeignKey): Team 모델과의 1:1 관계
