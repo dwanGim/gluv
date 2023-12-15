@@ -4,7 +4,7 @@ from posts.models import CommunityPost
 from recruits.models import RecruitmentPost
 
 
-class Notification(models.Model):
+class Like(models.Model):
     '''
     좋아요 모델
 
