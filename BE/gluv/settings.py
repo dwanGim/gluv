@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'chatrooms',
     'comments',
     'likes',
-    'messages',
+    # 'messages',
     'notifications',
     'posts',
     'recruits',
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'schedules',
     'teams',
     'users',
+    'books',
 ]
 
 MIDDLEWARE = [
