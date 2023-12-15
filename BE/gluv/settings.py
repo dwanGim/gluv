@@ -35,8 +35,18 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_spectacular',
     # custom app
-    'users',
+    'chatrooms',
+    'comments',
+    'likes',
+    'chatroom_messages',
+    'notifications',
     'posts',
+    'recruits',
+    'reports',
+    'schedules',
+    'teams',
+    'users',
+    'books',
 ]
 
 MIDDLEWARE = [
