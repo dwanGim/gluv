@@ -41,9 +41,9 @@ class RecruitmentPost(models.Model):
     ]
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    frequency = models.CharField(choices=FREQUENCY_CHOICES)
-    day = models.CharField(choices=DAY_CHOICES, null=True, blank=True)
-    week = models.CharField(choices=WEEK_CHOICES, null=True, blank=True)
+    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES)
+    day = models.CharField(max_length=10, choices=DAY_CHOICES, null=True, blank=True)
+    week = models.CharField(max_length=10, choices=WEEK_CHOICES, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
