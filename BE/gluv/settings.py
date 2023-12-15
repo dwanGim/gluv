@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'chatrooms',
     'comments',
     'likes',
-    # 'messages',
+    'chatroom_messages',
     'notifications',
     'posts',
     'recruits',
