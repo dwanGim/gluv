@@ -1,13 +1,15 @@
 
 from django.urls import path
+from django.contrib.auth.views import LoginView
 from .views import (
     UserCreateView,
     UserDetailView,
+
 )
 
-# 아직 회원가입과 유저 정보 조회만 구현
 urlpatterns = [
     path('signup/', UserCreateView.as_view(), name='signup'),
+    path('login/', LoginView.as_view(), name='login'),
     path('<int:pk>/profile/', UserDetailView.as_view(), name='user-detail'),
 ]
 '''
