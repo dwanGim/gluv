@@ -17,7 +17,7 @@ class TestAladinCrawler(TestCase):
         result = crawler.crawl()
         # API 응답이 None이 아닌지 확인
         self.assertIsNot(result.text, None)
-        print(result.text)
+        # print(result.text)
 
     def test_crawl_and_save_to_db(self):
         crawler = AladinCrawler()
@@ -48,7 +48,7 @@ class TestAladinCrawler(TestCase):
                 published_date=published_date,
                 content=content
             )
-            
+
         # 저장된 도서의 개수와 API 응답에서 얻은 도서의 개수가 일치하는지 확인
         self.assertEqual(Book.objects.count(), len(book_items))
-        print(result.text)
+        # print(result.text)
