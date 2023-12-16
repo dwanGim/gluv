@@ -148,3 +148,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
 }
+
+AUTH_USER_MODEL = 'users.User'
