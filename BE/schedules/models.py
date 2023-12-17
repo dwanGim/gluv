@@ -2,16 +2,16 @@ from django.db import models
 from teams.models import Team
 
 
-class Schedules(models.Model):
+class Schedule(models.Model):
     '''
     일정 모델
 
     Attributes:
         team (ForeignKey): Team 모델과의 1:1 관계
         frequency : 매일, 매주, 매월과 같은 반복성을 설정합니다. 특정일만 진행할 모임일 경우 '주기없음'으로 설정합니다.
-        day : 반복성 일정이 아닌 날짜를 입력할 때 사용합니다.
-        week : frequency를 '매주'로 설정했을 때, 'n번째' 주를 특정하기 위해 사용합니다.
-        date : 특정일을 지정합니다.
+        day : frequency를 '매주' 혹은 '매달'로 설정했을 때, 'x요일'을 지정할 때 사용합니다.
+        week : frequency를 '매달'로 설정했을 때, 'n번째' 주를 특정하기 위해 사용합니다.
+        date : frequency가 '주기 없음'일 때 특정일을 일정으로 지정합니다.
     
     Detail:
         day를 월요일, 수요일로 다중지정했을 시 DB에는 "월요일, 수요일"로 저장됩니다.
