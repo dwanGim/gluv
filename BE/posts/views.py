@@ -5,9 +5,10 @@ from rest_framework.decorators import action
 from rest_framework import pagination
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import status
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from posts.models import CommunityPost
-from posts.serializers import CommunityPostSerializer, ListResponseSerializer, ResponseSerializer
+from posts.serializers import CreateRequestSerializer, DetailSerializer, IDOnlySerializer, ListResponseSerializer, ResponseSerializer, SummarySerializer
 
 class CommunityPostPagination(pagination.PageNumberPagination):
     page_size = 10
@@ -59,7 +60,7 @@ class CommunityPostView(viewsets.ViewSet):
         paginator = CommunityPostPagination()
         notices = CommunityPost.objects.filter(category='notice')
         page = paginator.paginate_queryset(notices, request)
-        serializer = CommunityPostSerializer(page, many=True)
+        serializer = SummarySerializer(page, many=True)
         return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
     
     def list(self, request, *args, **kwargs):
@@ -107,7 +108,7 @@ class CommunityPostView(viewsets.ViewSet):
         paginator = CommunityPostPagination()
         posts = CommunityPost.objects.exclude(category='notice').filter(**filter_conditions).order_by(order)
         page = paginator.paginate_queryset(posts, request)
-        serializer = CommunityPostSerializer(page, many=True)
+        serializer = SummarySerializer(page, many=True)
         return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
     
     @action(methods=["get"], detail=False, url_path='hot', url_name="hot")
@@ -118,7 +119,7 @@ class CommunityPostView(viewsets.ViewSet):
         paginator = CommunityPostPagination()
         post = CommunityPost.objects.exclude(category='notice').order_by('-view_count')
         page = paginator.paginate_queryset(post, request)
-        serializer = CommunityPostSerializer(page, many=True)
+        serializer = SummarySerializer(page, many=True)
         return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
     
     def retrieve(self, request, pk=None, *args, **kwargs):
@@ -129,7 +130,50 @@ class CommunityPostView(viewsets.ViewSet):
         response_serializer = ResponseSerializer(data={
             'status': 'success',
             'message': 'Success message',
-            'data': CommunityPostSerializer(post, many=False).data
+            'data': DetailSerializer(post, many=False).data
         })
         response_serializer.is_valid(raise_exception=True)
+        return Response(status=status.HTTP_200_OK, data=response_serializer.validated_data)
+    
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='Authorization',
+                location=OpenApiParameter.HEADER,
+                type=str,
+                description='JWT 토큰 (Bearer 헤더 사용)',
+                required=True,
+            ),
+        ],
+        request=CreateRequestSerializer
+    )
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        title = data.get('title')
+        category = data.get('category')
+        content = data.get('content')
+
+        response = data={
+            'status': 'success',
+            'message': 'Success message',
+            'data': None,
+        }
+
+        try:
+            post = CommunityPost(
+                title=title,
+                content=content,
+                category = category,
+                author = request.user,
+            )
+            post.save()
+            response['data'] = IDOnlySerializer(post, many=False).data
+        except Exception as e:
+            response['status'] = 'fail'
+            response['message'] = f'{str(e)}'
+
+        print(response)
+        response_serializer = ResponseSerializer(data=response)
+        response_serializer.is_valid(raise_exception=False)
         return Response(status=status.HTTP_200_OK, data=response_serializer.validated_data)
