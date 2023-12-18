@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import permissions, status
+from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -39,19 +40,18 @@ class UserDeactivateView(DestroyAPIView):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class UserLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
-# view.py로 옮기기
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def user_logout(request):
-    try:
-        # 현재 사용자의 refresh 토큰을 무효화
-        refresh_token = request.data.get('refresh', None)
-        if refresh_token:
-            RefreshToken(refresh_token).blacklist()
+    def post(self, request, *args, **kwargs):
+        try:
+            # 현재 사용자의 refresh 토큰을 무효화
+            refresh_token = request.data.get('refresh', None)
+            if refresh_token:
+                RefreshToken(refresh_token).blacklist()
 
-        response_data = {'detail': 'Successfully logged out.'}
-        return Response(response_data, status=200)
-    except Exception as e:
-        response_data = {'detail': 'Failed to log out.'}
-        return Response(response_data, status=400)
+            response_data = {'detail': 'Successfully logged out.'}
+            return Response(response_data, status=200)
+        except Exception as e:
+            response_data = {'detail': 'Failed to log out.'}
+            return Response(response_data, status=400)
