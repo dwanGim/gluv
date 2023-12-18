@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
+    TokenVerifyView,
 )
 from drf_spectacular.views import (
     SpectacularAPIView, 
@@ -29,10 +29,8 @@ urlpatterns = [
     # path('schedules/', include("schedules.urls")),
     # path('teams/', include("teams.urls")),
     path('users/', include("users.urls")),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # jwt 토큰 발급
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # jwt 토큰 갱신
-    # path('users/', include("users.urls")),
-
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # 토큰발급/재생성
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'), # 토큰 검증
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

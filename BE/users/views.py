@@ -1,15 +1,10 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 from .models import User
 from .serializers import UserSerializer
 
@@ -19,39 +14,74 @@ class UserCreateView(CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
-class UserDetailView(RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    def test_func(self):
+        
+        return not self.request.user.is_authenticated
 
-class UserProfileEditView(UpdateAPIView):
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        
+        return response
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        password1 = form.cleaned_data.get('password1')
+        password2 = form.cleaned_data.get('password2')
+        nickname = form.cleaned_data.get('nickname')
+        
+        return super().form_valid(form)
+
+class UserDetailView(UserPassesTestMixin, RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class UserDeactivateView(DestroyAPIView):
+    def test_func(self):
+        return self.get_object() == self.request.user
+
+class UserProfileEditView(UserPassesTestMixin, UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def test_func(self):
+        return self.get_object() == self.request.user
+    
+
+class UserDeactivateView(UserPassesTestMixin, DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def test_func(self):
+        # 사용자 자신이거나 스태프 권한이 있는지 확인
+        user = self.get_object()
+        return user == self.request.user or self.request.user.is_staff
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # 사용자를 비활성화 처리하거나 삭제 로직을 추가할 수 있습니다.
+
         instance.is_active = False
         instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class UserLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+        response = super().destroy(request, *args, **kwargs)
+       
+        return response
+
+class UserLogoutView(UserPassesTestMixin, APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user == self.get_object()
 
     def post(self, request, *args, **kwargs):
         try:
-            # 현재 사용자의 refresh 토큰을 무효화
             refresh_token = request.data.get('refresh', None)
             if refresh_token:
                 RefreshToken(refresh_token).blacklist()
 
-            response_data = {'detail': 'Successfully logged out.'}
-            return Response(response_data, status=200)
+            response_data = {'detail': '성공적으로 로그아웃되었습니다.'}
+            return Response(response_data, status=status.HTTP_200_OK)
         except Exception as e:
-            response_data = {'detail': 'Failed to log out.'}
-            return Response(response_data, status=400)
+            response_data = {'detail': '로그아웃하는 데 실패했습니다.'}
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        
