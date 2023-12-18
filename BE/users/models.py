@@ -19,10 +19,10 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    region = models.CharField(max_length=20, null=True, blank=True)
+    region = models.CharField(max_length=20, blank=True)
     nickname = models.CharField(max_length=20)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
-    profile_content = models.TextField(null=True, blank=True)
+    profile_content = models.TextField(blank=True)
     is_blocked = models.BooleanField(default=False)
     
     is_active = models.BooleanField(default=True)
