@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     'teams',
     'users',
     'books',
-    # Celery Task
-    'django_celery_beat',
     # Channels
     'channels',
 ]
@@ -84,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'gluv.wsgi.application'
-ASGI_APPLICATION = 'gluv.asgi.application'
+# ASGI_APPLICATION = 'gluv.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
