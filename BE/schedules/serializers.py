@@ -5,7 +5,7 @@ from .models import Schedule
 
 class ScheduleSerializer(serializers.ModelSerializer):
     '''
-    Notification 모델에 대한 Serializer
+    Schedule 모델에 대한 Serializer
     '''
     class Meta:
         model = Schedule
