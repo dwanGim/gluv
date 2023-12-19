@@ -21,7 +21,7 @@ urlpatterns = [
     # path('books/', include("books.urls")),
     # path('chatrooms/', include("chatrooms.urls")),
     # path('comments/', include("comments.urls")),
-    # path('likes/', include("likes.urls")),
+    path('likes/', include("likes.urls")),
     # path('messages/', include("messages.urls")),
     # path('notifications/', include("notifications.urls")),
     path('posts/', include("posts.urls")),
