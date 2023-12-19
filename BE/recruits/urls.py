@@ -1,10 +1,11 @@
-# urls.py
-from django.urls import path
-from .views import RecruitListView, RecruitHotListView, RecruitDetailView, RecruitApplyView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+router = DefaultRouter(trailing_slash=True)
+router.register(r'', views.RecruitmentPostViewSet, basename='recruits')
 
 urlpatterns = [
-    path('', RecruitListView.as_view(), name='recruit-list'),
-    path('hot/', RecruitHotListView.as_view(), name='recruit-hot-list'),
-    path('<int:pk>/', RecruitDetailView.as_view(), name='recruit-detail'),
-    path('<int:pk>/apply/', RecruitApplyView.as_view(), name='recruit-apply'),
+    path('',  include(router.urls)),
 ]
