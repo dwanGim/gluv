@@ -6,6 +6,7 @@ from rest_framework import pagination
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, BasePermission
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from django.db import transaction, models
 
 from posts.models import CommunityPost
 from posts.serializers import CreateRequestSerializer, DetailSerializer, IDOnlySerializer, ModifyRequestSerializer, SummarySerializer
@@ -124,19 +125,29 @@ class CommunityPostView(viewsets.ViewSet):
         serializer = SummarySerializer(page, many=True)
         return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
     
+    @transaction.atomic
     def retrieve(self, request, pk=None, *args, **kwargs):
         '''
         게시글 상세 조회
         '''
-        post = CommunityPost.objects.get(id=pk)
-        response = self.generate_response(
-            status='success',
-            message = 'Success message',
-            data = DetailSerializer(post, many=False).data
-        )
-        print(response)
-        return Response(status=status.HTTP_200_OK, data=response)
-    
+        try:
+            post = CommunityPost.objects.get(id=pk)
+            response = self.generate_response(
+                status='success',
+                message = 'Success message',
+                data = DetailSerializer(post, many=False).data
+            )
+            post.view_count = models.F('view_count') + 1
+            post.save()
+            return Response(status=status.HTTP_200_OK, data=response)
+        except Exception as e:
+            response = self.generate_response(
+                status='fail',
+                message = str(e),
+            )
+            return Response(status=status.HTTP_200_OK, data=response)
+
+
     @extend_schema(
         parameters=[
             OpenApiParameter(
