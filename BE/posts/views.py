@@ -1,14 +1,16 @@
 from collections import OrderedDict
+from tkinter import NO
+from requests import delete
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import pagination
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, BasePermission
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from posts.models import CommunityPost
-from posts.serializers import CreateRequestSerializer, DetailSerializer, IDOnlySerializer, ListResponseSerializer, ResponseSerializer, SummarySerializer
+from posts.serializers import CreateRequestSerializer, DetailSerializer, IDOnlySerializer, ModifyRequestSerializer, SummarySerializer
 
 class CommunityPostPagination(pagination.PageNumberPagination):
     page_size = 10
@@ -24,34 +26,36 @@ class CommunityPostPagination(pagination.PageNumberPagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ]))
-
+    
 class CommunityPostView(viewsets.ViewSet):
     '''
     커뮤니티 게시글 관련 ViewSet
     '''
     pagination_class = pagination.PageNumberPagination
+    serializer_class = DetailSerializer
 
     def get_permissions(self):
-        # list 메서드에는 권한 필요 없음
-        if self.action == 'list':
+        # list, notices, hot, retrieve 메서드에는 권한 필요 없음
+        if self.action in ['list', 'notices', 'hot', 'retrieve']:
             return [AllowAny()]
         
-        # notices 메서드에는 권한 필요 없음
-        if self.action == 'notices':
-            return [AllowAny()]
-        
-        # hot 메서드에는 권한 필요 없음
-        if self.action == 'hot':
-            return [AllowAny()]
-        
-        # retrieve 메서드에는 권한 필요 없음
-        if self.action == 'retrieve':
-            return [AllowAny()]
-        
+        # partial_update, delete 메서드는 요청자와 작성자가 동일한지 체크
+        if self.action in ['partial_update', 'delete']:
+            return [IsAuthenticated()]
         # 기타 경우에는 기본 권한 적용
         else:
             return [IsAuthenticated()]
-
+    
+    def has_object_permission(self, request, post):
+        return post.author == request.user
+    
+    def generate_response(self, status, message, data=None):
+        return {
+            'status': status,
+            'message': message,
+            'data': data,
+        }
+    
     @action(methods=["get"], detail=False, url_path='notices', url_name="notices")
     def notices(self, request, *args, **kwargs):
         '''
@@ -127,13 +131,13 @@ class CommunityPostView(viewsets.ViewSet):
         게시글 상세 조회
         '''
         post = CommunityPost.objects.get(id=pk)
-        response_serializer = ResponseSerializer(data={
-            'status': 'success',
-            'message': 'Success message',
-            'data': DetailSerializer(post, many=False).data
-        })
-        response_serializer.is_valid(raise_exception=True)
-        return Response(status=status.HTTP_200_OK, data=response_serializer.validated_data)
+        response = self.generate_response(
+            status='success',
+            message = 'Success message',
+            data = DetailSerializer(post, many=False).data
+        )
+        print(response)
+        return Response(status=status.HTTP_200_OK, data=response)
     
     @extend_schema(
         parameters=[
@@ -154,7 +158,7 @@ class CommunityPostView(viewsets.ViewSet):
         category = data.get('category')
         content = data.get('content')
 
-        response = data={
+        response = {
             'status': 'success',
             'message': 'Success message',
             'data': None,
@@ -173,7 +177,61 @@ class CommunityPostView(viewsets.ViewSet):
             response['status'] = 'fail'
             response['message'] = f'{str(e)}'
 
-        print(response)
-        response_serializer = ResponseSerializer(data=response)
-        response_serializer.is_valid(raise_exception=False)
-        return Response(status=status.HTTP_200_OK, data=response_serializer.validated_data)
+        response = self.generate_response(**response)
+        return Response(status=status.HTTP_200_OK, data=response)
+    
+    @extend_schema(
+        request=ModifyRequestSerializer
+    )
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        response = {
+            'status': 'success',
+            'message': 'Success message',
+        }
+        print(request.user)
+        
+        try:
+            post = CommunityPost.objects.get(id=pk)
+            # 나중에 리팩토링 해야함.
+            is_author = self.has_object_permission(request=request, post=post)
+            if is_author is False:
+                response['status'] = 'UNAUTHORIZED'
+                response['message'] = '게시글 작성자가 아닙니다.'
+            else:
+                serializer = DetailSerializer(post, data=request.data, partial=True)
+                serializer.is_valid(raise_exception=False)
+                serializer.save()
+        except CommunityPost.DoesNotExist:
+            response['status'] = 'NOT_FOUND'
+            response['message'] = '게시글을 찾을 수 없습니다.'
+        except Exception as e:
+            response['status'] = 'error'
+            response['message'] = str(e)
+
+        response = self.generate_response(**response)
+        return Response(status=status.HTTP_200_OK, data=response)
+    
+    def destroy(self, request, pk=None, *args, **kwargs):
+        response = {
+            'status': 'success',
+            'message': 'Success message',
+        }
+
+        try:
+            post = CommunityPost.objects.get(id=pk)
+            is_author = self.has_object_permission(request=request, post=post)
+
+            if not is_author:
+                response['status'] = 'UNAUTHORIZED'
+                response['message'] = '게시글 작성자가 아닙니다.'
+            else:
+                post.delete()
+        except CommunityPost.DoesNotExist:
+            response['status'] = 'NOT_FOUND'
+            response['message'] = '게시글을 찾을 수 없습니다.'
+        except Exception as e:
+            response['status'] = 'error'
+            response['message'] = str(e)
+
+        response = self.generate_response(**response)
+        return Response(status=status.HTTP_200_OK, data=response)
