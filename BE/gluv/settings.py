@@ -172,3 +172,18 @@ AUTH_USER_MODEL = 'users.User'
 # CORS ORIGIN 허용할 주소
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3001' ,'http://localhost:3001']
 CORS_ALLOW_CREDENTIALS = True
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'drf-spectacular API Document',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'SECURITY_DEFINITIONS': {
+            'Token': {
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'in': 'header',
+            },
+        },
+        'persistAuthorization': True,
+    },
+}
