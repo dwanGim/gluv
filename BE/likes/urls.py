@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import LikeViewSet
 
 router = DefaultRouter()
-router.register(r'likes', LikeViewSet, basename='like')
+router.register(r'', LikeViewSet, basename='like')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('/', include(router.urls)),
 ]
