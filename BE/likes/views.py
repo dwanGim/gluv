@@ -11,6 +11,21 @@ from .serializers import LikeSerializer
 from rest_framework.decorators import action
 
 class LikeViewSet(viewsets.ModelViewSet):
+    '''
+    좋아요를 관리하는 ViewSet입니다.
+    
+    - 좋아요 누르기:
+      - URL: POST /api/likes/like_post/
+      - 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
+      - 위의 데이터에서 1은 실제 게시물 또는 모집 게시물의 ID에 대한 것으로 대체되어야 합니다.
+
+    - 좋아요 취소:
+      - URL: POST /api/likes/unlike_post/
+      - 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
+
+    - 내가 해당 게시물에 좋아요했는지 확인:
+      - URL: GET /api/likes/is_liked/?post_id=1 또는 GET /api/likes/is_liked/?recruit_id=1
+    '''
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
@@ -45,7 +60,7 @@ class LikeViewSet(viewsets.ModelViewSet):
         if not post_id and not recruit_id:
             return Response({'error': '게시글 ID가 필요합니다.'}, status=400)
 
-        # 해당 게시글에 대한 좋아요 찾기
+        
         like_query = Like.objects.filter(user=request.user)
         if post_id:
             like_query = like_query.filter(community_post__id=post_id)
@@ -79,37 +94,4 @@ class LikeViewSet(viewsets.ModelViewSet):
         is_liked = like_query.exists()
         return Response({'is_liked': is_liked})
 
-    # 해당 게시물에 대한 좋아요 개수 가져오기
-    @action(detail=False, methods=['get'])
-    def like_count(self, request):
-        post_id = request.query_params.get('post_id')
-        recruit_id = request.query_params.get('recruit_id')
 
-        if not post_id and not recruit_id:
-            return Response({'error': '게시글 ID가 필요합니다.'}, status=400)
-
-        # 해당 게시글에 대한 좋아요 개수 가져오기
-        like_query = Like.objects
-        if post_id:
-            like_query = like_query.filter(community_post__id=post_id)
-        elif recruit_id:
-            like_query = like_query.filter(recruitment_post__id=recruit_id)
-
-        like_count = like_query.count()
-        return Response({'like_count': like_count})
-
-# 좋아요 누르기:
-
-# URL: POST /api/likes/like_post/
-# 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
-# 위의 데이터에서 1은 실제 게시물 또는 모집 게시물의 ID에 대한 것으로 대체되어야 합니다.
-    
-# 좋아요 취소:
-# URL: POST /api/likes/unlike_post/
-# 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
-    
-# 내가 해당 게시물에 좋아요했는지 확인:
-# URL: GET /api/likes/is_liked/?post_id=1 또는 GET /api/likes/is_liked/?recruit_id=1
-    
-# 게시물에 좋아요가 몇 개인지 확인:
-# URL: GET /api/likes/like_count/?post_id=1 또는 GET /api/likes/like_count/?recruit_id=1
