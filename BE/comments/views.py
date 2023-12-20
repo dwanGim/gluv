@@ -5,7 +5,7 @@ from .models import Comment
 from .serializers import CommentSerializer, CommentCreateSerializer ,CommentUpdateSerializer, CommentDeleteSerializer
 
 class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer  # 기본 시리얼라이저 설정
+    serializer_class = CommentSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):
@@ -20,13 +20,13 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Comment.objects.all()
 
     def perform_create(self, serializer):
-        # 댓글 생성에 사용되는 시리얼라이저
+        # 댓글 생성
         serializer = CommentCreateSerializer(data=self.request.data, context={'request': self.request})
         serializer.is_valid(raise_exception=True)
         serializer.save(user_id=self.request.user)  
 
     def update(self, request, *args, **kwargs):
-        # 댓글 수정에 사용되는 시리얼라이저
+        # 댓글 수정
         instance = self.get_object()
         serializer = CommentUpdateSerializer(instance, data=request.data, partial=True, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -34,6 +34,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
+        # 댓글 삭제
         serializer = CommentDeleteSerializer(data={'comment_id': kwargs['pk']}, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
