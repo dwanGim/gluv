@@ -26,7 +26,8 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 class TeamMemberChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
-        fields = ['team', 'user', 'is_leader']
+        fields = ['user', 'team', 'is_leader', 'is_approved']
+        # fields = ['user', 'team', 'is_leader']
 
 class ScheduleSerializer(serializers.ModelSerializer):
     day = serializers.ListField(child=serializers.CharField(), allow_empty=True)
