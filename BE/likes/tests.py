@@ -75,7 +75,7 @@ class LikeModelTest(TestCase):
             content='RecruitmentPost Test'
         )
 
-        # Create two likes for self.community_post2
+    
         self.like1 = Like.objects.create(user=self.user, community_post=self.community_post2)
         self.like2 = Like.objects.create(user=self.user2, community_post=self.community_post2)
 
@@ -116,8 +116,9 @@ class LikeModelTest(TestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # 잘못된 요청에 대해 like객체가 생성되지 않았음을 확인
+        
         # 4. 이미 좋아요 된 게시글에 대한 post 요청 오류 확인
+        # 잘못된 요청에 대해 like객체가 생성되지 않았음을 확인
         with self.assertRaises(Like.DoesNotExist):
             Like.objects.get(user=self.user, recruitment_post=self.recruitment_post)
         with self.assertRaises(Like.DoesNotExist):
@@ -155,7 +156,7 @@ class LikeModelTest(TestCase):
         response_like_post = self.client.post(url_like_post, data_like_post)
         self.assertEqual(response_like_post.status_code, status.HTTP_200_OK)
 
-       # 내가 해당 포스트에 좋아요했는지 여부 확인
+        # 내가 해당 포스트에 좋아요했는지 여부 확인
         url_is_liked = f'/likes/api/is_liked/?post_id={self.community_post.id}'
         response_is_liked2 = self.client.get(url_is_liked)
         self.assertEqual(response_is_liked2.status_code, status.HTTP_200_OK)
@@ -167,7 +168,7 @@ class LikeModelTest(TestCase):
         response_unlike_post = self.client.post(url_unlike_post, data_unlike_post)
         self.assertEqual(response_unlike_post.status_code, status.HTTP_200_OK)
 
-         # 좋아요가 제거되었는지 확인
+        # 좋아요가 제거되었는지 확인
         url_is_liked = f'/likes/api/is_liked/?post_id={self.community_post.id}'
         response_is_liked3 = self.client.get(url_is_liked)
         self.assertEqual(response_is_liked3.status_code, status.HTTP_200_OK)

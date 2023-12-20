@@ -14,7 +14,6 @@ class LikeViewSet(viewsets.ViewSet):
     - 좋아요 누르기:
       - URL: POST /likes/like_post/
       - 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
-      - 위의 데이터에서 1은 실제 게시물 또는 모집 게시물의 ID에 대한 것으로 대체되어야 합니다.
 
     - 좋아요 취소:
       - URL: POST /likes/unlike_post/
@@ -101,7 +100,6 @@ class LikeViewSet(viewsets.ViewSet):
 
 
     # 해당 게시물에 좋아요를 얼마나 했는지 확인
-    
     @action(detail=False, methods=['get'])
     def like_count(self, request):
         post_id = request.query_params.get('post_id')
