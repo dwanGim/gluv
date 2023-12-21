@@ -105,8 +105,11 @@ class CommunityPostView(viewsets.ViewSet):
             order = 'view_count'
 
         # 정렬 순서 
-        if order_query.lower() == 'desc':
+        if order_query.lower() == 'asc':
+            order = order
+        else:
             order = '-' + order
+        
 
         paginator = CommunityPostPagination()
         posts = CommunityPost.objects.exclude(category='notice').filter(**filter_conditions).order_by(order)
