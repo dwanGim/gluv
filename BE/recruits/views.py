@@ -1,13 +1,39 @@
+from collections import OrderedDict
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
+from django.db import transaction
 
 from .models import RecruitmentPost
 from .serializers import RecruitmentPostSerializer, RecruitmentPostCreateSerializer
+from teams.serializers import TeamSerializer, TeamMemberSerializer
 from teams.models import Team, TeamMember
-from teams.serializers import TeamSerializer, ScheduleSerializer, TeamMemberSerializer
 from schedules.models import Schedule
 
+
+class RecruitmentPostPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, status, message, data):
+        return Response(OrderedDict([
+            ('status', 'success'),
+            ('message', 'Success message'),
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+    
+
+@extend_schema_view(
+    create=extend_schema(
+        request=RecruitmentPostCreateSerializer(),
+    )
+)
 class RecruitmentPostViewSet(viewsets.ModelViewSet):
     '''
     모집 게시글 ViewSet
@@ -16,6 +42,41 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
     queryset = RecruitmentPost.objects.all()
     serializer_class = RecruitmentPostSerializer
     permission_classes = [permissions.AllowAny]
+    pagination_class = PageNumberPagination
+
+    def list(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        category_query = request.GET.get('category', '')
+        region_query = request.GET.get('region', '')
+        order_by_query = request.GET.get('order_by', 'created_at')
+        order_query = request.GET.get('order', 'asc')
+
+        # 필터링 조건 설정
+        filter_conditions = {}
+        if search_query:
+            filter_conditions['title__icontains'] = search_query
+
+        if category_query:
+            filter_conditions['team__category__icontains'] = category_query
+
+        if region_query:
+            filter_conditions['region__icontains'] = region_query
+
+        order = 'created_at'
+        if order_by_query.lower() == 'views':
+            order = 'view_count'
+
+        if order_query.lower() == 'asc':
+            order = order
+        else:
+            order = '-' + order
+        
+
+        paginator = RecruitmentPostPagination()
+        posts = self.get_queryset().filter(**filter_conditions).order_by(order)
+        page = paginator.paginate_queryset(posts, request)
+        serializer = RecruitmentPostSerializer(page, many=True)
+        return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         '''
@@ -27,54 +88,55 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
-        '''
-        게시글 생성 시 Team과 Schedule 생성
-        '''
+        # 인자 파싱 후 검증
         serializer = RecruitmentPostCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        validated_data = serializer.validated_data
+
+        author = self.request.user
+        team = validated_data.get('team')
+
+        # 팀 정보가 없을 경우 생성
+        # 팀과 모집글 게시글이 1:1로 설계했으므로 추후에 get_or_create 형태로 바뀌어야함.
+        if not team:
+            team_category = validated_data.get('category')
+            team_max_attendance = validated_data.get('max_attendance')
+            team = Team.objects.create(
+                category=team_category, 
+                max_attendance=team_max_attendance, 
+                current_attendance=1, 
+                name=f'{author.nickname}의 모임')
+            
+            team_member, member_created = TeamMember.objects.get_or_create(
+                user=author, 
+                team=team, 
+                is_approved=True, 
+                is_leader=True)
+            team_member.save()
         
-        # 모임 정보가 입력되어 있지 않을 경우 모임 생성
-        if not serializer.validated_data['team']:
-            user = serializer.validated_data['user']
-            team_data = {
-                'name': f"{user.nickname}의 모임",
-                'category': serializer.validated_data['category'],
-                'max_attendance': serializer.validated_data['max_attendance'],
-                'current_attendance': 1,
-            }
-            team_serializer = TeamSerializer(data=team_data)
-            team_serializer.is_valid(raise_exception=True)
-            team_serializer.save()
-
-            # 작성자 모임 리더 등록
-            team_member_data = {
-                'user': user.id,
-                'team': team_serializer.data['id'],
-                'is_leader': True,
-                'is_approved': True,
-            }
-            team_member_serializer = TeamMemberSerializer(data=team_member_data)
-            team_member_serializer.is_valid(raise_exception=True)
-            team_member_serializer.save()
-            serializer.validated_data['team'] = team_serializer.data['id']
-
-        # 모집 게시물 생성
-        self.perform_create(serializer)
-
-        # 일정 생성
+        # 스케줄이 없을 경우 생성, 있다면 기존 스케줄 활용
+        # 기존 스케줄이 활용될 경우, 추가 인자로 받은 부분을 업데이트 할지 결정해야함.
         schedule_data = {
-            'team': serializer.validated_data['team'],
-            'frequency': serializer.validated_data['frequency'],
-            'week': serializer.validated_data['week'],
-            'day': serializer.validated_data['day']
+            'frequency': validated_data.get('frequency'),
+            'day': validated_data.get('day'),
+            'week': validated_data.get('week'),
         }
-        schedule_serializer = ScheduleSerializer(data=schedule_data)
-        schedule_serializer.is_valid(raise_exception=True)
-        schedule_serializer.save()
+        schedule, _ = Schedule.objects.get_or_create(team=team, defaults=schedule_data)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # 게시글 생성
+        recruit_post = RecruitmentPost.objects.create(
+            team=team,
+            author=author,
+            title=validated_data.get('title'),
+            content=validated_data.get('content'),
+            region=validated_data.get('region')
+        )
+        recruit_post.save()
+        return Response(recruit_post.id, status=status.HTTP_201_CREATED)
+
     
     @action(detail=False, methods=['get'], url_path='hot', url_name='hot')
     def hot_list(self, request):
@@ -98,7 +160,7 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         DELETE : 모집게시글에 가입 신청한 유저가 신청을 취소
         '''
         post = self.get_object()
-        user = request.user
+        user = request.user.pk
         team = post.team 
 
         if request.method == 'GET':

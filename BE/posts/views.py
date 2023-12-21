@@ -61,7 +61,7 @@ class CommunityPostView(viewsets.ViewSet):
         공지 사항을 조회하는 함수
         '''
         paginator = CommunityPostPagination()
-        notices = CommunityPost.objects.filter(category='notice')
+        notices = CommunityPost.objects.filter(category='notice').order_by('-created_at')
         page = paginator.paginate_queryset(notices, request)
         serializer = SummarySerializer(page, many=True)
         return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
@@ -105,8 +105,11 @@ class CommunityPostView(viewsets.ViewSet):
             order = 'view_count'
 
         # 정렬 순서 
-        if order_query.lower() == 'desc':
+        if order_query.lower() == 'asc':
+            order = order
+        else:
             order = '-' + order
+        
 
         paginator = CommunityPostPagination()
         posts = CommunityPost.objects.exclude(category='notice').filter(**filter_conditions).order_by(order)

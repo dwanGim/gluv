@@ -1,66 +1,81 @@
 from rest_framework import serializers
-from schedules.models import Schedule
-from django.contrib.auth import get_user_model
+
 from .models import Team, TeamMember
+from schedules.models import Schedule
+
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ['name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image', 'member']
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
-        fields = ['id', 'email', 'nickname', 'profile_image']
+        fields = ['id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image']
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
     class Meta:
         model = TeamMember
-        fields = ['user', 'is_leader', 'is_approved']
+        fields = ['user', 'team', 'is_leader', 'is_approved']
 
 
 class TeamMemberChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
-        fields = ['user', 'team', 'is_leader', 'is_approved']
-        # fields = ['user', 'team', 'is_leader']
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    day = serializers.ListField(child=serializers.CharField(), allow_empty=True)
-    week = serializers.ListField(child=serializers.CharField(), allow_empty=True)
-
-    class Meta:
-        model = Schedule
-        fields = ['frequency', 'day', 'week', 'start_time', 'end_time']
+        fields = ['user']
 
 class TeamDetailSerializer(serializers.ModelSerializer):
-    schedule = ScheduleSerializer()
+    frequency = serializers.SerializerMethodField()
+    day = serializers.SerializerMethodField()
+    week = serializers.SerializerMethodField()
+    start_time = serializers.SerializerMethodField()
+    end_time = serializers.SerializerMethodField()
+
+    applied_member = serializers.SerializerMethodField()
+    is_leader = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
-        fields = ['name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image', 'schedule']
-    
-    def update(self, instance, validated_data):
-        schedule_data = validated_data.pop('schedule', {})
-        schedule_instance = instance.schedule
+        fields = [
+            'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image',
+            'applied_member', 'is_leader', 'frequency', 'day', 'week', 'start_time', 'end_time',
+        ]
 
-        # schedule 데이터 업데이트
-        for key, value in schedule_data.items():
-            setattr(schedule_instance, key, value)
+    def get_related_data(self, obj):
+        team_id = self.context.get('team_id')
+        user = self.context.get('user')
 
-        # 유효성 검사를 통한 데이터 저장
-        schedule_serializer = ScheduleSerializer(instance=schedule_instance, data=schedule_data)
-        schedule_serializer.is_valid(raise_exception=True)
-        schedule_serializer.save()
+        team_member_data = TeamMember.objects.filter(team=obj, is_approved=False).count()
+        is_leader = TeamMember.objects.filter(team=obj, user=user, is_leader=True).exists()
+        schedule = Schedule.objects.filter(team_id=team_id).first()
 
-        # Team 모델의 나머지 필드 업데이트
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-            
-        instance.save()
+        return {
+            'applied_member_count': team_member_data,
+            'is_leader': is_leader,
+            'schedule': schedule,
+        }
 
-        return instance
+    def get_applied_member(self, obj):
+        data = self.get_related_data(obj)
+        return data['applied_member_count']
+
+    def get_is_leader(self, obj):
+        data = self.get_related_data(obj)
+        return data['is_leader']
+
+    def get_frequency(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].frequency
+
+    def get_day(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].day if data['schedule'].day is not None else None
+
+    def get_week(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].week if data['schedule'].week is not None else None
+
+    def get_start_time(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].start_time if data['schedule'].start_time is not None else None
+
+    def get_end_time(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].end_time if data['schedule'].end_time is not None else None
