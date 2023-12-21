@@ -1,18 +1,27 @@
 from rest_framework import serializers
+
+
 from .models import RecruitmentPost
-from schedules.models import Schedule
 from teams.models import Team
+from likes.models import Like
 
 class RecruitmentPostSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-
+    likes = serializers.SerializerMethodField()
+    
     class Meta:
         model = RecruitmentPost
         fields = ['id', 'team', 'author', 'title', 'content', 'region', 
-                    'created_at', 'updated_at', 'view_count', 'name']
+                    'created_at', 'updated_at', 'view_count', 'name', 'likes']
 
     def get_name(self, obj):
         return obj.team.name if obj.team else None
+    
+    def get_likes(self, obj):
+        '''
+        추천수 조회
+        '''
+        return Like.objects.filter(recruitment_post=obj.id).count()
     
 class RecruitmentPostCreateSerializer(serializers.Serializer):
     # 게시글 필수 파라미터
