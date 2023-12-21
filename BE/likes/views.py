@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -25,7 +25,11 @@ class LikeViewSet(viewsets.ViewSet):
     - 해당 게시물에 좋아요를 얼마나 했는지 확인:
       - URL: GET /likes/like_count/?post_id=1 또는 GET /likes/like_count/?recruit_id=1
     '''
-
+    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        if self.action == 'like_count':
+            return [permissions.AllowAny()]
+        return super().get_permissions()
     # 좋아요 누르기
     @action(detail=False, methods=['post'])
     def like_post(self, request):

@@ -41,9 +41,16 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
     '''
     queryset = RecruitmentPost.objects.all()
     serializer_class = RecruitmentPostSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = PageNumberPagination
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'hot_list']:
+            return [permissions.AllowAny()]
+        elif self.action in ['create', 'apply']:
+            return [permissions.IsAuthenticated()]
+        return super().get_permissions()
+    
     def list(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '')
         category_query = request.GET.get('category', '')
@@ -144,8 +151,6 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         인기 모집목록 조회 기능
         정렬 기준 : view_count
         모집 개수 : count 변수
-
-        페이지네이션 적용 필요
         '''
         count = 5
         queryset = RecruitmentPost.objects.order_by('-view_count')[:count]

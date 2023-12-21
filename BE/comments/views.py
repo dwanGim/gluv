@@ -1,13 +1,36 @@
+from collections import OrderedDict
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from .models import Comment
-from .serializers import CommentSerializer, CommentCreateSerializer ,CommentUpdateSerializer, CommentDeleteSerializer
+from .serializers import CommentSerializer, CommentCreateSerializer
+from .permissions import IsOwner
+from recruits.models import RecruitmentPost
+from posts.models import CommunityPost
+
+
+class CommentPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, status, message, data):
+        return Response(OrderedDict([
+            ('status', 'success'),
+            ('message', 'Success message'),
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+    
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [AllowAny]
-
+    
     def get_queryset(self):
         post_id = self.request.query_params.get('post_id')
         recruit_id = self.request.query_params.get('recruit_id')
@@ -18,28 +41,64 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Comment.objects.filter(recruit_id=recruit_id)
         else:
             return Comment.objects.all()
+        
+    def get_permissions(self):
+        if self.action == 'list':
+            return [AllowAny()]
+        elif self.action == 'create':
+            return [IsAuthenticated()]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsOwner()]
+        return super().get_permissions()
+    
+    def list(self, request, *args, **kwargs):
+        paginator = CommentPagination()
+        comments = self.get_queryset().order_by('-created_at')
+        page = paginator.paginate_queryset(comments, request)
+        serializer = CommentSerializer(page, many=True)
+        return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
+        
+    def create(self, request, *args, **kwargs):
+        self.serializer_class = CommentCreateSerializer
+        data = request.data
 
-    def perform_create(self, serializer):
-        # 댓글 생성
-        serializer = CommentCreateSerializer(data=self.request.data, context={'request': self.request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user_id=self.request.user)  
+        user_id = request.user
+        post_id = data.get('post_id')
+        recruit_id = data.get('recruit_id')
+        content = data.get('content')
+        to_user = data.get('to_user')
+
+        comment = Comment(
+            user_id = user_id,
+            content = content
+            )
+        
+        if to_user:
+            to_user_instance = get_object_or_404(Comment, id=to_user)
+            comment.to_user = to_user_instance
+        if post_id:
+            post_instance = get_object_or_404(CommunityPost, id=post_id)
+            comment.post_id = post_instance
+        elif recruit_id:
+            recruit_instance = get_object_or_404(RecruitmentPost, id=recruit_id)
+            comment.recruit_id = recruit_instance
+
+        comment.save()
+        return Response({'detail':'댓글이 생성되었습니다.'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        # 댓글 수정
-        instance = self.get_object()
-        serializer = CommentUpdateSerializer(instance, data=request.data, partial=True, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+        instance = get_object_or_404(Comment, id=kwargs.get('pk'))
+        content = request.data.get('content')
 
-    def destroy(self, request, *args, **kwargs):
-        # 댓글 삭제
-        serializer = CommentDeleteSerializer(data={'comment_id': kwargs['pk']}, context={'request': request})
-        serializer.is_valid(raise_exception=True)
+        if content is not None:
+            instance.content = content
+            instance.save()
+            return Response({'datail': '댓글이 수정되었습니다.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': '내용이 입력되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        instance = self.get_object()
-        self.check_object_permissions(request, instance)
+    def destroy(self, request, *args, **kwargs):    
+        instance = get_object_or_404(Comment, id=kwargs.get('pk'))
         self.perform_destroy(instance)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

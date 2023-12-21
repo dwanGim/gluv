@@ -9,7 +9,9 @@ class Comment(models.Model):
     post_id = models.ForeignKey(CommunityPost, on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField(max_length=100)
     to_user = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"Comment by {self.user}: {self.content}"
+        return f"Comment by {self.user_id}: {self.content}"
 
