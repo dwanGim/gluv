@@ -33,7 +33,7 @@ class RecruitmentPostCreateSerializer(serializers.Serializer):
     category = serializers.CharField(required=True)
     max_attendance = serializers.IntegerField(required=True)
     # 팀 지정 옵션 파라미터
-    team_id = serializers.IntegerField(required=True)
+    team_id = serializers.IntegerField(required=False)
     # 일정 모델 관련 옵션 파라미터
     frequency = serializers.CharField(required=False)
     week = serializers.CharField(required=False)

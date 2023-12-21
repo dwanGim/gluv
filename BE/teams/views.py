@@ -166,3 +166,15 @@ class TeamMembersView(generics.ListAPIView):
         queryset = self.get_queryset().filter(team_id=self.kwargs['pk'])
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+class TeamMyListView(generics.ListAPIView):
+    serializer_class = TeamSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        queryset = TeamMember.objects.filter(user=user_id, is_approved=True)
+        team_ids = queryset.values_list('team_id', flat=True)
+        teams = Team.objects.filter(id__in=team_ids)
+
+        return teams

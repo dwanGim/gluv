@@ -1,6 +1,8 @@
+from collections import OrderedDict
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from django.db import transaction
 
@@ -10,6 +12,22 @@ from teams.serializers import TeamSerializer, TeamMemberSerializer
 from teams.models import Team, TeamMember
 from schedules.models import Schedule
 
+
+class RecruitmentPostPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, status, message, data):
+        return Response(OrderedDict([
+            ('status', 'success'),
+            ('message', 'Success message'),
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+    
 
 @extend_schema_view(
     create=extend_schema(
@@ -24,6 +42,41 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
     queryset = RecruitmentPost.objects.all()
     serializer_class = RecruitmentPostSerializer
     permission_classes = [permissions.AllowAny]
+    pagination_class = PageNumberPagination
+
+    def list(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '')
+        category_query = request.GET.get('category', '')
+        region_query = request.GET.get('region', '')
+        order_by_query = request.GET.get('order_by', 'created_at')
+        order_query = request.GET.get('order', 'asc')
+
+        # 필터링 조건 설정
+        filter_conditions = {}
+        if search_query:
+            filter_conditions['title__icontains'] = search_query
+
+        if category_query:
+            filter_conditions['team__category__icontains'] = category_query
+
+        if region_query:
+            filter_conditions['region__icontains'] = region_query
+
+        order = 'created_at'
+        if order_by_query.lower() == 'views':
+            order = 'view_count'
+
+        if order_query.lower() == 'asc':
+            order = order
+        else:
+            order = '-' + order
+        
+
+        paginator = RecruitmentPostPagination()
+        posts = self.get_queryset().filter(**filter_conditions).order_by(order)
+        page = paginator.paginate_queryset(posts, request)
+        serializer = RecruitmentPostSerializer(page, many=True)
+        return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         '''
