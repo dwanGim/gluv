@@ -10,6 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if not instance.profile_image:
+            ret['profile_image'] = '/media/default_profile.png'  # 기본 이미지의 경로
+        return ret
 
 
 class UserEditSerializer(serializers.ModelSerializer):
