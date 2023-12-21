@@ -38,34 +38,44 @@ class TeamDetailSerializer(serializers.ModelSerializer):
             'applied_member', 'is_leader', 'frequency', 'day', 'week', 'start_time', 'end_time',
         ]
 
-    def get_frequency(self, obj):
+    def get_related_data(self, obj):
         team_id = self.context.get('team_id')
-        schedule = Schedule.objects.filter(team_id=team_id).first()
-        return schedule.frequency if schedule else None
+        user = self.context.get('user')
 
-    def get_day(self, obj):
-        team_id = self.context.get('team_id')
+        team_member_data = TeamMember.objects.filter(team=obj, is_approved=False).count()
+        is_leader = TeamMember.objects.filter(team=obj, user=user, is_leader=True).exists()
         schedule = Schedule.objects.filter(team_id=team_id).first()
-        return schedule.day if schedule else None
 
-    def get_week(self, obj):
-        team_id = self.context.get('team_id')
-        schedule = Schedule.objects.filter(team_id=team_id).first()
-        return schedule.week if schedule else None
-    
-    def get_start_time(self, obj):
-        team_id = self.context.get('team_id')
-        schedule = Schedule.objects.filter(team_id=team_id).first()
-        return schedule.start_time if schedule else None
+        return {
+            'applied_member_count': team_member_data,
+            'is_leader': is_leader,
+            'schedule': schedule,
+        }
 
-    def get_end_time(self, obj):
-        team_id = self.context.get('team_id')
-        schedule = Schedule.objects.filter(team_id=team_id).first()
-        return schedule.end_time if schedule else None
-    
     def get_applied_member(self, obj):
-        return TeamMember.objects.filter(team=obj, is_approved=False).count()
+        data = self.get_related_data(obj)
+        return data['applied_member_count']
 
     def get_is_leader(self, obj):
-        user = self.context.get('user')
-        return TeamMember.objects.filter(team=obj, user=user, is_leader=True).exists()
+        data = self.get_related_data(obj)
+        return data['is_leader']
+
+    def get_frequency(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].frequency
+
+    def get_day(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].day if data['schedule'].day is not None else None
+
+    def get_week(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].week if data['schedule'].week is not None else None
+
+    def get_start_time(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].start_time if data['schedule'].start_time is not None else None
+
+    def get_end_time(self, obj):
+        data = self.get_related_data(obj)
+        return data['schedule'].end_time if data['schedule'].end_time is not None else None
