@@ -1,13 +1,18 @@
 from rest_framework import permissions, status
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
-from .models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
+
 from .serializers import UserSerializer, UserEditSerializer
 from .permissions import IsOwner
+
+User = get_user_model()
+
 
 class UserCreateView(CreateAPIView):
     queryset = User.objects.all()
@@ -98,3 +103,18 @@ class UserLogoutView(APIView):
         except Exception as e:
             response_data = {'detail': '로그아웃하는 데 실패했습니다.'}
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        
+class UserVerifyView(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        provided_password = request.data.get('password', None)
+
+        if not provided_password:
+            return Response({'detail': '비밀번호를 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if check_password(provided_password, user.password):
+            return Response({'detail': '비밀번호가 일치합니다.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': '비밀번호가 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
