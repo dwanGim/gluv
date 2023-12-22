@@ -13,6 +13,7 @@ from .views import (
     UserProfileEditView,
     UserDeactivateView,
     UserLogoutView,
+    UserVerifyView,
 )
 
 urlpatterns = [
@@ -22,5 +23,6 @@ urlpatterns = [
     path('<int:pk>/profile/', UserDetailView.as_view(), name='user_detail'),
     path('profile/', UserProfileEditView.as_view(), name='user_profile_edit'),
     path('deactivate/', UserDeactivateView.as_view(), name='user_deactivate'),
+    path('verify/', UserVerifyView.as_view(), name='user_verify')
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

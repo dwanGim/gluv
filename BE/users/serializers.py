@@ -22,3 +22,8 @@ class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('region', 'nickname', 'profile_image', 'profile_content')
+
+class UserVerifySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('password')
