@@ -3,13 +3,6 @@ from django.db import transaction
 
 from .models import Schedule
 
-# class ScheduleSerializer(serializers.ModelSerializer):
-#     '''
-#     Schedule 모델에 대한 Serializer
-#     '''
-#     class Meta:
-#         model = Schedule
-#         fields = ['id', 'team', 'frequency', 'day', 'week', 'start_time', 'end_time']
 
 class ScheduleSerializer(serializers.ModelSerializer):
     '''
@@ -22,7 +15,11 @@ class ScheduleSerializer(serializers.ModelSerializer):
         model = Schedule
         fields = ['id', 'team', 'frequency', 'day', 'week', 'start_time', 'end_time']
 
+
 class ChangeScheduleSerializer(serializers.ModelSerializer):
+    '''
+    Schedule 모델 수정을 위한 Serializer
+    '''
     class Meta:
         model = Schedule
         fields = ['frequency', 'day', 'week', 'start_time', 'end_time']

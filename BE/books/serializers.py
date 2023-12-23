@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Book
 
+
 class ListResponseSerializer(serializers.Serializer):
     '''
     일반적인 응답으로 포장하는 Serializer
@@ -12,6 +13,7 @@ class ListResponseSerializer(serializers.Serializer):
     status = serializers.CharField()
     message = serializers.CharField()
     data = serializers.ListField(child=serializers.DictField())
+
 
 class BookSerializer(serializers.ModelSerializer):
     '''

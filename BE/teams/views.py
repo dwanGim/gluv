@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Team, TeamMember
-from .serializers import TeamSerializer, TeamMemberSerializer, TeamDetailSerializer, TeamMemberChangeSerializer
 from .permissions import IsLeaderOrReadOnly
+from .serializers import TeamSerializer, TeamMemberSerializer, TeamDetailSerializer, TeamMemberChangeSerializer
 
 
 class TeamPagination(PageNumberPagination):
@@ -102,11 +102,6 @@ class TeamLeaveView(generics.DestroyAPIView):
     '''
     모임 탈퇴를 위한 View
     로그인 권한 필요
-    TeamMember 모델의 속성
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    is_leader = models.BooleanField(default=False)
-    is_approved = models.BooleanField(default=False)
     '''
     permission_classes = [IsAuthenticated]
 

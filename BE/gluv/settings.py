@@ -1,29 +1,22 @@
-from pathlib import Path
-from dotenv import load_dotenv
 import os
 from datetime import timedelta
 from urllib.parse import quote
+from pathlib import Path
+from dotenv import load_dotenv
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE DIR 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# .env 불러오기
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -86,8 +79,6 @@ WSGI_APPLICATION = 'gluv.wsgi.application'
 # ASGI_APPLICATION = 'gluv.asgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -97,8 +88,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -116,8 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
@@ -128,15 +115,12 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# REST framework 설정
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -147,13 +131,16 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+# Media 설정
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# JWT 설정
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=6000),
 }
 
+# 커스텀 User 모델 설정
 AUTH_USER_MODEL = 'users.User'
 
 # # 환경 변수에서 Redis 비밀번호 조회
@@ -170,9 +157,10 @@ AUTH_USER_MODEL = 'users.User'
 # }
 
 # CORS ORIGIN 허용할 주소
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3001' ,'http://localhost:3001']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3001', 'http://localhost:3001']
 CORS_ALLOW_CREDENTIALS = True
 
+# Spectacular 설정
 SPECTACULAR_SETTINGS = {
     'TITLE': 'drf-spectacular API Document',
     'SERVE_INCLUDE_SCHEMA': False,
@@ -187,5 +175,3 @@ SPECTACULAR_SETTINGS = {
         'persistAuthorization': True,
     },
 }
-
-LOGIN_URL = ''

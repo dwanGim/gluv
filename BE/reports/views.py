@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 from rest_framework import status
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
-from reports.serializers import CreateReportSerializer, ReportSerializer
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth import get_user_model
+from reports.serializers import CreateReportSerializer, ReportSerializer
 from reports.models import Report
 
 User = get_user_model()
+
 
 @extend_schema_view(
     create=extend_schema(

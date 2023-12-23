@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,14 +18,14 @@ class RecruitmentPostPagination(PageNumberPagination):
     max_page_size = 100
 
     def get_paginated_response(self, status, message, data):
-        return Response(OrderedDict([
-            ('status', 'success'),
-            ('message', 'Success message'),
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'status': 'success',
+            'message': 'Success message',
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
     
 
 @extend_schema_view(
@@ -52,6 +51,9 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
     
     def list(self, request, *args, **kwargs):
+        '''
+        모집 게시글 목록 조회 기능
+        '''
         search_query = request.GET.get('search', '')
         category_query = request.GET.get('category', '')
         region_query = request.GET.get('region', '')
@@ -77,7 +79,6 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
             order = order
         else:
             order = '-' + order
-        
 
         paginator = RecruitmentPostPagination()
         posts = self.get_queryset().filter(**filter_conditions).order_by(order)
@@ -144,7 +145,6 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         recruit_post.save()
         return Response(recruit_post.id, status=status.HTTP_201_CREATED)
 
-    
     @action(detail=False, methods=['get'], url_path='hot', url_name='hot')
     def hot_list(self, request):
         '''
@@ -188,6 +188,7 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
             
         elif request.method == 'DELETE':
             member = TeamMember.objects.filter(user=user, team=team, is_approved=False).first()
+            # 멤버가 있는지 판별
             if not member:
                 return Response({'detail': '취소할 신청이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
             member.delete()

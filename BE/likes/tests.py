@@ -1,7 +1,9 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
+
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+
 from likes.models import Like
 from posts.models import CommunityPost
 from teams.models import Team
@@ -24,16 +26,6 @@ class TestLikeModel(TestCase):
     '''
     def setUp(self) -> None:
         self.client = APIClient()
-
-        self.users = []
-        for i in range(1, 6):
-            user = get_user_model().objects.create_user(
-                email=f'testuserfor{i}@example.com',
-                password=f'testpwfor{i}',
-                region=f'testfor{i}',
-                nickname=f'TestUserfor{i}'
-            )
-            self.users.append(user)
 
         self.user = get_user_model().objects.create_user(
             email='testuser@example.com',
@@ -75,7 +67,6 @@ class TestLikeModel(TestCase):
             title='Recruitment Test',
             content='RecruitmentPost Test'
         )
-
     
         self.like1 = Like.objects.create(user=self.user, community_post=self.community_post2)
         self.like2 = Like.objects.create(user=self.user2, community_post=self.community_post2)
@@ -161,9 +152,9 @@ class TestLikeModel(TestCase):
         url_is_liked = f'/likes/api/is_liked/?post_id={self.community_post.id}'
         response_is_liked2 = self.client.get(url_is_liked)
         self.assertEqual(response_is_liked2.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_is_liked2.data['is_liked'], True)  # 초기에는 좋아요를 누르지 않았으므로 False로 확인
+        self.assertEqual(response_is_liked2.data['is_liked'], True)
 
-        # 좋아요가 제거
+        # 좋아요 제거
         url_unlike_post = '/likes/api/unlike_post/'
         data_unlike_post = {'post_id': self.community_post.id}
         response_unlike_post = self.client.post(url_unlike_post, data_unlike_post)
@@ -191,8 +182,6 @@ class TestLikeModel(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['is_liked'], True)
 
-    
-
     def test_like_count(self):
         # 8. 해당 포스트의 좋아요 수 확인
         url = f'/likes/api/like_count/?post_id={self.community_post.id}'
@@ -208,9 +197,8 @@ class TestLikeModel(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['likes_count'], 1)
 
-      
         # 다시 확인
         url = f'/likes/api/like_count/?post_id={self.community_post2.id}'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['likes_count'], 2)  # 초기에는 좋아요 5개 확인
+        self.assertEqual(response.data['likes_count'], 2)

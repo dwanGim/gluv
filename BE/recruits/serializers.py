@@ -1,11 +1,16 @@
 from rest_framework import serializers
 
-from schedules.models import Schedule
-from .models import RecruitmentPost
-from teams.models import Team
 from likes.models import Like
+from schedules.models import Schedule
+from teams.models import Team
+
+from .models import RecruitmentPost
+
 
 class RecruitmentPostSerializer(serializers.ModelSerializer):
+    '''
+    모집게시글 조회를 위한 시리얼라이저
+    '''
     name = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     schedule_id = serializers.SerializerMethodField()
@@ -35,6 +40,9 @@ class RecruitmentPostSerializer(serializers.ModelSerializer):
         return None
     
 class RecruitmentPostCreateSerializer(serializers.Serializer):
+    '''
+    모집게시글 생성을 위한 시리얼라이저
+    '''
     # 게시글 필수 파라미터
     title = serializers.CharField(required=True)
     content = serializers.CharField(required=True)

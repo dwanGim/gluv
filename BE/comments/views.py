@@ -1,39 +1,44 @@
-from collections import OrderedDict
 from rest_framework import viewsets, status
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
-from .models import Comment
-from .serializers import CommentSerializer, CommentCreateSerializer
-from .permissions import IsOwner
+from rest_framework.response import Response
+
+from django.shortcuts import get_object_or_404
+
 from recruits.models import RecruitmentPost
 from posts.models import CommunityPost
 
+from .models import Comment
+from .serializers import CommentSerializer, CommentCreateSerializer
+from .permissions import IsOwner
+
 
 class CommentPagination(PageNumberPagination):
+    '''
+    Pagination 커스텀
+    '''
     page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
     def get_paginated_response(self, status, message, data):
-        return Response(OrderedDict([
-            ('status', 'success'),
-            ('message', 'Success message'),
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
-    
+        return Response({
+            'status': 'success',
+            'message': 'Success message',
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [AllowAny]
     
     def get_queryset(self):
         post_id = self.request.query_params.get('post_id')
         recruit_id = self.request.query_params.get('recruit_id')
+        print(recruit_id)
 
         if post_id:
             return Comment.objects.filter(post_id=post_id)
@@ -43,6 +48,9 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Comment.objects.all()
         
     def get_permissions(self):
+        '''
+        권한 설정
+        '''
         if self.action == 'list':
             return [AllowAny()]
         elif self.action == 'create':
@@ -52,6 +60,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
     
     def list(self, request, *args, **kwargs):
+        '''
+        댓글 목록 조회
+
+        Detail:
+            기존 쿼리셋에 페이지네이션 설정 후 반환
+        '''
         paginator = CommentPagination()
         comments = self.get_queryset().order_by('-created_at')
         page = paginator.paginate_queryset(comments, request)

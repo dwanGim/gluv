@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from .models import CommunityPost
 from likes.models import Like
+from .models import CommunityPost
+
 
 class DetailSerializer(serializers.ModelSerializer):
     '''
@@ -18,6 +19,7 @@ class DetailSerializer(serializers.ModelSerializer):
         '''
         return Like.objects.filter(community_post=obj.id).count()
 
+
 class SummarySerializer(serializers.ModelSerializer):
     '''
     Content를 제외한 Serializer
@@ -32,6 +34,7 @@ class SummarySerializer(serializers.ModelSerializer):
     def get_nickname(self, obj):
         return obj.author.nickname
     
+
 class IDOnlySerializer(serializers.ModelSerializer):
     '''
     ID 필드만 포함하는 Serializer
@@ -42,6 +45,7 @@ class IDOnlySerializer(serializers.ModelSerializer):
         model = CommunityPost
         fields = ['post_id']
 
+
 class CreateRequestSerializer(serializers.Serializer):
     title = serializers.CharField(required=True)
     content = serializers.CharField(required=True)
@@ -49,6 +53,7 @@ class CreateRequestSerializer(serializers.Serializer):
             "notice", "qna", "creation-novel", "creation-poem", 
             "creation-essay", "comm-novel", "comm-poem", "comm-essay"
         ], required=True)
+
 
 class ModifyRequestSerializer(serializers.Serializer):
     title = serializers.CharField(required=False)
