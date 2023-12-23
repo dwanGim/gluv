@@ -137,7 +137,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # JWT 설정
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=6000),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
 }
 
 # 커스텀 User 모델 설정

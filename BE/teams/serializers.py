@@ -13,6 +13,11 @@ class TeamSerializer(serializers.ModelSerializer):
         model = Team
         fields = ['id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image']
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if not instance.image:
+            ret['image'] =  '/media/defalut_team.png'
+        return ret
 
 class TeamMemberSerializer(serializers.ModelSerializer):
     '''
