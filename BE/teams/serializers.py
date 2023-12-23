@@ -1,4 +1,7 @@
+from genericpath import exists
 from rest_framework import serializers
+
+from recruits.models import RecruitmentPost
 
 from .models import Team, TeamMember
 from schedules.models import Schedule
@@ -30,12 +33,13 @@ class TeamDetailSerializer(serializers.ModelSerializer):
 
     applied_member = serializers.SerializerMethodField()
     is_leader = serializers.SerializerMethodField()
+    recruit_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
         fields = [
             'id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image',
-            'applied_member', 'is_leader', 'frequency', 'day', 'week', 'start_time', 'end_time',
+            'applied_member', 'is_leader', 'frequency', 'day', 'week', 'start_time', 'end_time', 'recruit_id'
         ]
 
     def get_related_data(self, obj):
@@ -62,20 +66,39 @@ class TeamDetailSerializer(serializers.ModelSerializer):
 
     def get_frequency(self, obj):
         data = self.get_related_data(obj)
-        return data['schedule'].frequency
+        return data['schedule'].frequency if data['schedule'] else None
 
     def get_day(self, obj):
         data = self.get_related_data(obj)
+        if not data['schedule']:
+            return None
+        
         return data['schedule'].day if data['schedule'].day is not None else None
 
     def get_week(self, obj):
         data = self.get_related_data(obj)
+        if not data['schedule']:
+            return None
+        
         return data['schedule'].week if data['schedule'].week is not None else None
 
     def get_start_time(self, obj):
         data = self.get_related_data(obj)
+        if not data['schedule']:
+            return None
+        
         return data['schedule'].start_time if data['schedule'].start_time is not None else None
 
     def get_end_time(self, obj):
         data = self.get_related_data(obj)
+        if not data['schedule']:
+            return None
+        
         return data['schedule'].end_time if data['schedule'].end_time is not None else None
+    
+    def get_recruit_id(self, obj):
+        exists = RecruitmentPost.objects.filter(team=obj).exists()
+        if not exists:
+            return None
+        
+        return RecruitmentPost.objects.filter(team=obj).first().id
