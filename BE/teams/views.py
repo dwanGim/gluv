@@ -1,12 +1,32 @@
+from rest_framework import status, generics
 from rest_framework.generics import get_object_or_404
-from rest_framework import generics
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+
 from .models import Team, TeamMember
 from .serializers import TeamSerializer, TeamMemberSerializer, TeamDetailSerializer, TeamMemberChangeSerializer
 from .permissions import IsLeaderOrReadOnly
 
+
+class TeamPagination(PageNumberPagination):
+    '''
+    Pagination 커스텀
+    '''
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, status, message, data):
+        return Response({
+            'status': 'success',
+            'message': 'Success message',
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+    
 
 class TeamListView(generics.ListAPIView):
     '''
@@ -168,6 +188,10 @@ class TeamMembersView(generics.ListAPIView):
         return Response(serializer.data)
     
 class TeamMyListView(generics.ListAPIView):
+    '''
+    유저가 가입한 모임을 보기 위한 View
+    로그인 권한 필요
+    '''
     serializer_class = TeamSerializer
     permission_classes = [IsAuthenticated]
 
@@ -176,5 +200,34 @@ class TeamMyListView(generics.ListAPIView):
         queryset = TeamMember.objects.filter(user=user_id, is_approved=True)
         team_ids = queryset.values_list('team_id', flat=True)
         teams = Team.objects.filter(id__in=team_ids)
-
         return teams
+    
+    def list(self, request, *args, **kwargs):
+        paginator = TeamPagination()
+        comments = self.get_queryset().order_by('id')
+        page = paginator.paginate_queryset(comments, request)
+        serializer = TeamSerializer(page, many=True)
+        return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
+    
+
+class TeamsMyAppliedListView(generics.ListAPIView):
+    '''
+    유저가 가입 신청한 모임을 보기 위한 View
+    로그인 권한 필요
+    '''
+    serializer_class = TeamSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        queryset = TeamMember.objects.filter(user=user_id, is_approved=False)
+        team_ids = queryset.values_list('team_id', flat=True)
+        teams = Team.objects.filter(id__in=team_ids)
+        return teams
+    
+    def list(self, request, *args, **kwargs):
+        paginator = TeamPagination()
+        comments = self.get_queryset().order_by('id')
+        page = paginator.paginate_queryset(comments, request)
+        serializer = TeamSerializer(page, many=True)
+        return paginator.get_paginated_response(status='success', message='Successfully', data=serializer.data)
