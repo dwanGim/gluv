@@ -34,7 +34,7 @@ class TeamDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = [
-            'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image',
+            'id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image',
             'applied_member', 'is_leader', 'frequency', 'day', 'week', 'start_time', 'end_time',
         ]
 
