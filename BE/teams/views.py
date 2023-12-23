@@ -96,32 +96,47 @@ class TeamJoinView(generics.UpdateAPIView):
         return Response({'detail': '참가신청 승인 완료되었습니다.'}, status=status.HTTP_200_OK)
 
 
+from django.shortcuts import get_object_or_404
+
 class TeamLeaveView(generics.DestroyAPIView):
     '''
     모임 탈퇴를 위한 View
     로그인 권한 필요
+    TeamMember 모델의 속성
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    is_leader = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
     '''
-    queryset = TeamMember.objects.all()
-    serializer_class = TeamMemberSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_destroy(self, instance):
+    def get_queryset(self):
+        team_id = self.kwargs.get('pk')
+        return TeamMember.objects.filter(team=team_id)
+    
+    def get_object(self):
+        team_id = self.kwargs.get('pk')
+        user_id = self.request.user.id
+        instance = TeamMember.objects.get(team_id=team_id, user_id=user_id)
+        return instance
+        
+    def destroy(self, request, *args, **kwargs):
         # 모임 인원 수 조절
+        instance = self.get_object()
         team = get_object_or_404(Team, pk=self.kwargs.get('pk'))
         if team.current_attendance == 1:
             return Response({'detail': '모임의 다른 구성원이 없습니다. 모임 삭제를 해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
         team.current_attendance -= 1
         team.save()
-
         if instance.is_leader:
             # 만약 Leader인 경우, 다음 index의 유저를 Leader로 설정
             next_leader = TeamMember.objects.filter(team=team, is_approved=True, is_leader=False).first()
-            print(next_leader)
             if next_leader:
                 next_leader.is_leader = True
                 next_leader.save()
         instance.delete()
         return Response({"detail": "모임 탈퇴 완료되었습니다."}, status=status.HTTP_200_OK)
+
     
 
 class TeamKickView(generics.DestroyAPIView):
@@ -134,11 +149,12 @@ class TeamKickView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsLeaderOrReadOnly]
 
     def get_object(self):
-        user_id = self.request.data.get('user')
+        user_id = self.request.data.get('user_id')
         team = get_object_or_404(Team, pk=self.kwargs.get('pk'))
-        return get_object_or_404(self.get_queryset(), team=team, user=user_id)
+        return get_object_or_404(self.get_queryset(), team=team.id, user=user_id)
 
-    def perform_destroy(self, instance):
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
         team = get_object_or_404(Team, pk=self.kwargs.get('pk'))
         team.current_attendance -= 1
         team.save()
