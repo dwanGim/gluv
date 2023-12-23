@@ -1,23 +1,37 @@
 from rest_framework import serializers
 
 from .models import CommunityPost
+from likes.models import Like
 
 class DetailSerializer(serializers.ModelSerializer):
     '''
     CommunityPost 모델에 대한 Serializer
     '''
+    likes = serializers.SerializerMethodField()
     class Meta:
         model = CommunityPost
         fields = '__all__'
+    
+    def get_likes(self, obj):
+        '''
+        추천수 조회
+        '''
+        return Like.objects.filter(community_post=obj.id).count()
 
 class SummarySerializer(serializers.ModelSerializer):
     '''
     Content를 제외한 Serializer
     '''
+    nickname = serializers.SerializerMethodField()
+
     class Meta:
         model = CommunityPost
         exclude = ['content']
+        
 
+    def get_nickname(self, obj):
+        return obj.author.nickname
+    
 class IDOnlySerializer(serializers.ModelSerializer):
     '''
     ID 필드만 포함하는 Serializer
