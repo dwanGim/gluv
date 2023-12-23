@@ -108,14 +108,10 @@ class TeamLeaveView(generics.DestroyAPIView):
     is_leader = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     '''
-    # serializer_class = TeamMemberSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # 현재 팀의 멤버들만 가져오도록 수정
         team_id = self.kwargs.get('pk')
-        print(team_id)
-        print(TeamMember.objects.filter(team=team_id))
         return TeamMember.objects.filter(team=team_id)
     
     def get_object(self):
@@ -153,11 +149,12 @@ class TeamKickView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsLeaderOrReadOnly]
 
     def get_object(self):
-        user_id = self.request.data.get('user')
+        user_id = self.request.data.get('user_id')
         team = get_object_or_404(Team, pk=self.kwargs.get('pk'))
-        return get_object_or_404(self.get_queryset(), team=team, user=user_id)
+        return get_object_or_404(self.get_queryset(), team=team.id, user=user_id)
 
-    def perform_destroy(self, instance):
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
         team = get_object_or_404(Team, pk=self.kwargs.get('pk'))
         team.current_attendance -= 1
         team.save()
