@@ -17,7 +17,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('books/', include("books.urls")),
-    # path('chatrooms/', include("chatrooms.urls")),
+    path('chatrooms/', include("chatrooms.urls")),
     path('comments/', include("comments.urls")),
     path('likes/', include("likes.urls")),
     # path('messages/', include("messages.urls")),
