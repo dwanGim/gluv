@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from django.db import transaction
+from chatrooms.models import ChatRoom
 
 from teams.serializers import TeamSerializer, TeamMemberSerializer
 from teams.models import Team, TeamMember
@@ -118,6 +119,9 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
                 current_attendance=1, 
                 name=f'{author.nickname}의 모임')
             
+            chatroom, created = ChatRoom.objects.get_or_create(team=team)
+            chatroom.save()
+
             team_member, member_created = TeamMember.objects.get_or_create(
                 user=author, 
                 team=team, 
