@@ -59,6 +59,7 @@ class TeamDetailSerializer(serializers.ModelSerializer):
     is_leader = serializers.SerializerMethodField()
     recruit_id = serializers.SerializerMethodField()
     chatroom_id = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
@@ -137,3 +138,10 @@ class TeamDetailSerializer(serializers.ModelSerializer):
             return None
         
         return ChatRoom.objects.filter(team=obj).first().id
+    
+    def get_location(self, obj):
+        exists = RecruitmentPost.objects.filter(team=obj).exists()
+        if not exists:
+            return None
+        
+        return RecruitmentPost.objects.filter(team=obj).first().region
