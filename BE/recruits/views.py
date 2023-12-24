@@ -45,7 +45,7 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'hot_list']:
+        if self.action in ['list', 'retrieve', 'hot_list', 'recent_list']:
             return [permissions.AllowAny()]
         elif self.action in ['create', 'apply']:
             return [permissions.IsAuthenticated()]
@@ -152,12 +152,21 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='hot', url_name='hot')
     def hot_list(self, request):
         '''
-        인기 모집목록 조회 기능
+        인기 모집글 목록 조회 기능
         정렬 기준 : view_count
         모집 개수 : count 변수
         '''
-        count = 5
-        queryset = RecruitmentPost.objects.order_by('-view_count')[:count]
+        queryset = RecruitmentPost.objects.order_by('-view_count')[:10]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='recent', url_name='recent')
+    def recent_list(self, request):
+        '''
+        최근 모집글 목록 조회 기능
+        정렬 기준 : created_at
+        '''
+        queryset = RecruitmentPost.objects.order_by('-created_at')[:4]
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
