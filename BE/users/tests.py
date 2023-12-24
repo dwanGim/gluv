@@ -1,7 +1,8 @@
-from django.test import TestCase
-from users.models import User
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.test import TestCase
+from users.models import User
+
 
 class TestUserCreate(TestCase):
     def setUp(self) -> None:
@@ -65,7 +66,6 @@ class TestUserCreate(TestCase):
             self.fail(f"Login failed with response: {error_message}")
 
         
-
 class TokenRefreshTestCase(APITestCase):
     # 토큰 발급 및 검증 테스트 케이스
     def setUp(self):
@@ -83,24 +83,6 @@ class TokenRefreshTestCase(APITestCase):
         response = self.client.post('/token/refresh/', {'refresh': self.refresh_token}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('access', response.data)
-
-        # # 토큰 검증 테스트케이스
-        # verify_response = self.client.post(
-        #     '/token/verify/',
-        #     {'token': response.data['access']},
-        #     content_type='application/json',
-        #     HTTP_ACCEPT='application/json'
-        # )
-
-        # try:
-        #     verify_response_data = verify_response.json()
-        #     self.assertEqual(verify_response.status_code, 200)
-        #     self.assertIn('token', verify_response_data)
-        # except ValueError as e:
-        #     print(f"에러 : JSON response : {e}")
-        #     print(f"에러 내용 : content: {verify_response.content}")
-
-    
 
 
 class UserProfileTests(APITestCase):

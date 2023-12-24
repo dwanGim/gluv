@@ -3,6 +3,7 @@ from django.test import TestCase
 from books.models import Book
 from books.crawlers.crawlers import AladinCrawler
 
+
 class TestAladinCrawler(TestCase):
     def setUp(self) -> None:
         # 테스트 시작 전에 호출되는 메서드

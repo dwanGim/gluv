@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -8,10 +7,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, B
 from rest_framework import status
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 
+from notifications.models import Notification
+from teams.models import TeamMember
 from .serializers import ChangeScheduleSerializer, ScheduleSerializer
 from .models import Schedule
-from teams.models import TeamMember
-from notifications.models import Notification
+
 
 @extend_schema_view(
     change=extend_schema(
@@ -76,7 +76,6 @@ class ScheduleView(viewsets.ViewSet):
         for member in team_members:
             Notification.objects.create(
                 user=member.user,
-                # 디테일도 추가하면 좋을 것 같음.
                 message=f"{schedule} 일정이 변경되었습니다: ",
             )
 

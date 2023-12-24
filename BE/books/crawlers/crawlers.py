@@ -1,7 +1,8 @@
+import copy
 import os
 from urllib.parse import urlencode
 import requests
-import copy
+
 
 class AladinCrawler:
     # Base URL 및 Endpoint

@@ -1,7 +1,7 @@
-from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 
-from books.views import RecentBookView
+from .views import RecentBookView
 
 router = DefaultRouter(trailing_slash=True)
 router.register(r'', RecentBookView, basename='books')

@@ -14,10 +14,8 @@ from drf_spectacular.views import (
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include("main.urls")),
     path('books/', include("books.urls")),
     path('chatrooms/', include("chatrooms.urls")),
     path('comments/', include("comments.urls")),
@@ -30,15 +28,15 @@ urlpatterns = [
     path('schedules/', include("schedules.urls")),
     path('teams/', include("teams.urls")),
     path('users/', include("users.urls")),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # 토큰발급/재생성
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'), # 토큰 검증
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),   # 토큰발급/재생성
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),      # 토큰 검증
 ]
 
+# Media url 패턴 추가
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Spectacular Document App Name
 app_name = 'api'
-
 # Spectacular Document API
 urlpatterns += [
     path("docs/json/", SpectacularJSONAPIView.as_view(), name="schema-json"),

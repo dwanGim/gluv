@@ -25,7 +25,7 @@ class Schedule(models.Model):
     ]
 
     team = models.OneToOneField(Team, on_delete=models.CASCADE, related_name='schedule')
-    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, null=True,default="주기없음")
+    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, null=True, default="주기없음")
     day = models.CharField(max_length=100, null=True, blank=True)
     week = models.CharField(max_length=100, null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)

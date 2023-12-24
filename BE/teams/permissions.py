@@ -1,6 +1,6 @@
-from teams.models import TeamMember
 from rest_framework import permissions
-from rest_framework.exceptions import PermissionDenied
+from teams.models import TeamMember
+
 
 class IsLeaderOrReadOnly(permissions.BasePermission):
     """

@@ -1,7 +1,11 @@
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.db import models
 
+
 class CustomUserManager(BaseUserManager):
+    '''
+    커스텀 유저 매니저
+    '''
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -17,7 +21,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-
+    '''
+    커스텀 유저 모델
+    Detail:
+        username을 email로 대체
+    '''
     REGION_CHOICES = [
         ('서울', '서울'),
         ('경기', '경기'),

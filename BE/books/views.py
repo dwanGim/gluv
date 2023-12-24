@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from books.models import Book
 from books.serializers import BookSerializer, ListResponseSerializer
 
+
 class RecentBookView(viewsets.ViewSet):
     '''
     신간 도서 정보를 조회하는 ViewSet

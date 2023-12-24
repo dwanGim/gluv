@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -17,21 +16,20 @@ class NotificationPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
     def get_paginated_response(self, status, message, data):
-        return Response(OrderedDict([
-            ('status', 'success'),
-            ('message', 'Success message'),
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'status': 'success',
+            'message': 'Success message',
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 @extend_schema_view(
     read=extend_schema(
         responses={status.HTTP_200_OK: NotificationSerializer(many=True)},
         request=ReadNotificationSerializer(),
     )
-
 )
 class NotificationView(viewsets.ViewSet):
     '''
@@ -73,7 +71,6 @@ class NotificationView(viewsets.ViewSet):
         # 알림 ID 리스트 파싱
         notification_ids = request.data.get('ids', [])
 
-        print(notification_ids)
         notifications = Notification.objects.filter(user=request.user, id__in=notification_ids)
         if notifications.exists() == False:
             response = self.generate_response(
