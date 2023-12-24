@@ -1,13 +1,14 @@
-from genericpath import exists
 from rest_framework import serializers
 
-from recruits.models import RecruitmentPost
-
-from .models import Team, TeamMember
 from schedules.models import Schedule
+from recruits.models import RecruitmentPost
+from .models import Team, TeamMember
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    '''
+    Team 모델 Serializer
+    '''
     class Meta:
         model = Team
         fields = ['id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image']
@@ -19,17 +20,34 @@ class TeamSerializer(serializers.ModelSerializer):
         return ret
 
 class TeamMemberSerializer(serializers.ModelSerializer):
+    '''
+    TeamMember 모델 Serializer
+    '''
+    nickname = serializers.SerializerMethodField()
     class Meta:
         model = TeamMember
-        fields = ['user', 'team', 'is_leader', 'is_approved']
+        fields = ['user', 'nickname', 'team', 'is_leader', 'is_approved']
+
+    def get_nickname(self, obj):
+        '''
+        닉네임 정보 제공
+        '''
+        return obj.user.nickname
 
 
 class TeamMemberChangeSerializer(serializers.ModelSerializer):
+    '''
+    TeamMember 모델 수정을 위한 Serializer
+    '''
     class Meta:
         model = TeamMember
         fields = ['user']
 
+
 class TeamDetailSerializer(serializers.ModelSerializer):
+    '''
+    Team 모델 상세 조회를 위한 Serializer
+    '''
     frequency = serializers.SerializerMethodField()
     day = serializers.SerializerMethodField()
     week = serializers.SerializerMethodField()
@@ -48,6 +66,9 @@ class TeamDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_related_data(self, obj):
+        '''
+        팀 상세 조회 시 필요한 데이터 조회
+        '''
         team_id = self.context.get('team_id')
         user = self.context.get('user')
 

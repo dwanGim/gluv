@@ -1,38 +1,30 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
 from django.shortcuts import get_object_or_404
-from .models import Like
+
 from posts.models import CommunityPost
 from recruits.models import RecruitmentPost
+from .models import Like
 from .serializers import LikeSerializer
+
 
 class LikeViewSet(viewsets.ViewSet):
     '''
-    좋아요를 관리하는 ViewSet입니다.
-    
-    - 좋아요 누르기:
-      - URL: POST /likes/like_post/
-      - 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
-
-    - 좋아요 취소:
-      - URL: POST /likes/unlike_post/
-      - 데이터: { "post_id": 1 } 또는 { "recruit_id": 1 }
-
-    - 내가 해당 게시물에 좋아요했는지 확인:
-      - URL: GET /likes/is_liked/?post_id=1 또는 GET /likes/is_liked/?recruit_id=1
-
-    - 해당 게시물에 좋아요를 얼마나 했는지 확인:
-      - URL: GET /likes/like_count/?post_id=1 또는 GET /likes/like_count/?recruit_id=1
+    좋아요(추천)를 관리하는 ViewSet
     '''
+
     permission_classes = [permissions.IsAuthenticated]
+
     def get_permissions(self):
         if self.action == 'like_count':
             return [permissions.AllowAny()]
         return super().get_permissions()
-    # 좋아요 누르기
+    
     @action(detail=False, methods=['post'])
     def like_post(self, request):
+    # 좋아요 누르기
         post_id = request.data.get('post_id')
         recruit_id = request.data.get('recruit_id')
 
@@ -54,9 +46,9 @@ class LikeViewSet(viewsets.ViewSet):
         serializer = LikeSerializer(like)
         return Response(serializer.data)
 
-    # 좋아요 취소
     @action(detail=False, methods=['post'])
     def unlike_post(self, request):
+    # 좋아요 취소
         post_id = request.data.get('post_id')
         recruit_id = request.data.get('recruit_id')
 
@@ -76,16 +68,15 @@ class LikeViewSet(viewsets.ViewSet):
             like.delete()
             return Response({'message': '좋아요가 취소되었습니다.'}, status=200)
         except Like.DoesNotExist:
-            # Return a 200 status code with a message indicating no previous like
             return Response({'message': '이미 좋아요를 누르지 않은 게시글입니다.'}, status=400)
 
         
        
 
 
-    # 내가 해당 게시물에 좋아요 했는지 확인
     @action(detail=False, methods=['get'])
     def is_liked(self, request):
+    # 해당 게시물에 대한 나의 좋아요 여부 확인
         post_id = request.query_params.get('post_id')
         recruit_id = request.query_params.get('recruit_id')
 
@@ -103,9 +94,9 @@ class LikeViewSet(viewsets.ViewSet):
         return Response({'is_liked': is_liked}, status=200)
 
 
-    # 해당 게시물에 좋아요를 얼마나 했는지 확인
     @action(detail=False, methods=['get'])
     def like_count(self, request):
+    # 해당 게시물의 좋아요 개수 확인
         post_id = request.query_params.get('post_id')
         recruit_id = request.query_params.get('recruit_id')
 

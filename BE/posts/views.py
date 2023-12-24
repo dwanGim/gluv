@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -6,10 +5,12 @@ from rest_framework import pagination
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, BasePermission
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+
 from django.db import transaction, models
 
 from posts.models import CommunityPost
 from posts.serializers import CreateRequestSerializer, DetailSerializer, IDOnlySerializer, ModifyRequestSerializer, SummarySerializer
+
 
 class CommunityPostPagination(pagination.PageNumberPagination):
     page_size = 10
@@ -17,14 +18,15 @@ class CommunityPostPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
     def get_paginated_response(self, status, message, data):
-        return Response(OrderedDict([
-            ('status', 'success'),
-            ('message', 'Success message'),
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'status': 'success',
+            'message': 'Success message',
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+    
     
 class CommunityPostView(viewsets.ViewSet):
     '''
@@ -204,7 +206,6 @@ class CommunityPostView(viewsets.ViewSet):
         
         try:
             post = CommunityPost.objects.get(id=pk)
-            # 나중에 리팩토링 해야함.
             is_author = self.has_object_permission(request=request, post=post)
             if is_author is False:
                 response['status'] = 'UNAUTHORIZED'

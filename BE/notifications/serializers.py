@@ -8,7 +8,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     '''
     class Meta:
         model = Notification
-        fields = '__all__'
+        fields = ['id', 'user', 'message', 'url', 'is_read', 'created_at']
 
 class ReadNotificationSerializer(serializers.Serializer):
     ids = serializers.ListField(child=serializers.IntegerField())

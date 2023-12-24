@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+
 from teams.models import Team
+
 
 class RecruitmentPost(models.Model):
     '''

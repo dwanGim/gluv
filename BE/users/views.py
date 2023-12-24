@@ -15,6 +15,9 @@ User = get_user_model()
 
 
 class UserCreateView(CreateAPIView):
+    '''
+    회원가입을 위한 View
+    '''
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
@@ -31,6 +34,9 @@ class UserCreateView(CreateAPIView):
         return super().form_valid(form)
 
 class UserDetailView(RetrieveAPIView):
+    '''
+    유저 정보를 보기 위한 View
+    '''
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -42,6 +48,9 @@ class UserDetailView(RetrieveAPIView):
             return Response({"detail": "로그인 해야 볼 수 있습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 class UserProfileEditView(UpdateAPIView):
+    '''
+    유저 정보를 수정하기 위한 View
+    '''
     queryset = User.objects.all()
     serializer_class = UserEditSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
@@ -75,6 +84,9 @@ class UserProfileEditView(UpdateAPIView):
 
 
 class UserDeactivateView(DestroyAPIView):
+    '''
+    유저 탈퇴를 위한 View
+    '''
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -90,6 +102,9 @@ class UserDeactivateView(DestroyAPIView):
         return Response(response_data, status=status.HTTP_204_NO_CONTENT)
 
 class UserLogoutView(APIView):
+    '''
+    유저 로그아웃을 위한 View
+    '''
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -105,6 +120,9 @@ class UserLogoutView(APIView):
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
         
 class UserVerifyView(GenericAPIView):
+    '''
+    유저 비밀번호 확인을 위한 View
+    '''
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
