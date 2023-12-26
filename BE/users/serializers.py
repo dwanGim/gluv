@@ -43,3 +43,9 @@ class UserSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'nickname', 'profile_image')
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if not instance.profile_image:
+            ret['profile_image'] = '/media/default_profile.png'
+        return ret
