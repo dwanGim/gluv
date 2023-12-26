@@ -57,8 +57,8 @@ jobs:
             echo "DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}" >> .env
             echo "REDIS_KEY=${{ secrets.REDIS_KEY }}" >> .env
             echo "DEBUG=${{ secrets.DEBUG }}" >> .env
-            echo "REDIS_KEY=${{ secrets.REDIS_KEY }}" >> .env
             echo "REDIS_HOST_PASSWORD=${{ secrets.REDIS_KEY }}" > ~/gluv/docker_redis/.env
+            echo "ttbkey=${{ secrets.BOOK_API_KEY }}" >> .env
             python3 -m venv venv
             source venv/bin/activate
             pip install -r ./requirements.txt
