@@ -78,7 +78,7 @@ class CommunityPostView(viewsets.ViewSet):
         category_query = request.GET.getlist('category', [])
         author_query = request.GET.get('author', '')
         order_by_query = request.GET.get('order_by', 'created_at')
-        order_query = request.GET.get('order', 'asc')
+        order_query = request.GET.get('order', 'desc')
         
         # 필터링 조건 설정
         filter_conditions = {}
