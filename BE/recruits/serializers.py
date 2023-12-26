@@ -5,6 +5,7 @@ from schedules.models import Schedule
 from teams.models import Team
 
 from .models import RecruitmentPost
+from users.serializers import UserSummarySerializer
 
 
 class RecruitmentPostSerializer(serializers.ModelSerializer):
@@ -14,11 +15,12 @@ class RecruitmentPostSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     schedule_id = serializers.SerializerMethodField()
+    author_info = UserSummarySerializer(source='author')
     
     class Meta:
         model = RecruitmentPost
         fields = ['id', 'team', 'author', 'title', 'content', 'region', 
-            'created_at', 'updated_at', 'view_count', 'name', 'likes', 'schedule_id']
+            'created_at', 'updated_at', 'view_count', 'name', 'likes', 'schedule_id', 'author_info']
 
     def get_name(self, obj):
         return obj.team.name if obj.team else None
