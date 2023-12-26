@@ -1,17 +1,20 @@
 from rest_framework import serializers
 
-from likes.models import Like
 from .models import CommunityPost
-
+from likes.models import Like
+from users.serializers import UserSummarySerializer
 
 class DetailSerializer(serializers.ModelSerializer):
     '''
     CommunityPost 모델에 대한 Serializer
     '''
     likes = serializers.SerializerMethodField()
+    author_info = UserSummarySerializer(source='author')
+    
     class Meta:
         model = CommunityPost
         fields = '__all__'
+    
     
     def get_likes(self, obj):
         '''
