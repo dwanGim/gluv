@@ -12,6 +12,7 @@ from schedules.models import Schedule
 
 from .models import RecruitmentPost
 from .serializers import RecruitmentPostSerializer, RecruitmentPostCreateSerializer
+from .permissions import IsLeaderOrReadOnly
 
 class RecruitmentPostPagination(PageNumberPagination):
     page_size = 6
@@ -49,6 +50,8 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         elif self.action in ['create', 'apply']:
             return [permissions.IsAuthenticated()]
+        elif self.action in ['partial_update']:
+            return [permissions.IsAuthenticated(), IsLeaderOrReadOnly()]
         return super().get_permissions()
     
     def list(self, request, *args, **kwargs):
