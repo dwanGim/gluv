@@ -15,7 +15,7 @@ class RecentBookView(viewsets.ViewSet):
     Attributes:
         DEFAULT_BOOK_COUNT (int): 기본 신간 도서 수
     '''
-    DEFAULT_BOOK_COUNT = 10
+    DEFAULT_BOOK_COUNT = 3
     http_method_names = ['get']
     permission_classes = [permissions.AllowAny]
     
@@ -29,6 +29,9 @@ class RecentBookView(viewsets.ViewSet):
         '''
         count = self.request.query_params.get('count', None)
         if count is None:
+            count = self.DEFAULT_BOOK_COUNT
+
+        if count > 3:
             count = self.DEFAULT_BOOK_COUNT
 
         # 신간 정보 요청
