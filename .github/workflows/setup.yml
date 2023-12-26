@@ -1,0 +1,72 @@
+name: Setup
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  setup-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 서버 설정
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }} 
+          username: ${{ secrets.AWS_SSH_USER }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            sudo apt update -y
+            sudo apt install -y python3
+            sudo apt install -y python3-pip 
+            sudo apt install -y python3-venv
+            sudo apt install -y python3-wheel
+            sudo apt install -y setuptools
+            sudo apt install -y celery
+            sudo pip install -y 'uvicorn[standard]'
+            sudo python3 -m pip install --no-cache-dir --upgrade pip
+            sudo apt install -y build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
+            sudo curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+            sudo usermod -aG docker $USER
+            newgrp docker
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo snap install docker
+            
+      - name: 배포
+        run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan -t rsa ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+            chmod 644 ~/.ssh/known_hosts
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }} 'mkdir -p ~/test'
+            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./* ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }}:~/test
+
+      - name: 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }} 
+          username: ${{ secrets.AWS_SSH_USER }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/gluv/BE
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
+            echo "DJANGO_SETTINGS_MODULE=${{ secrets.DJANGO_SETTINGS_MODULE }}" >> .env
+            echo "REDIS_KEY=${{ secrets.REDIS_KEY }}" >> .env
+            echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+            echo "REDIS_KEY=${{ secrets.REDIS_KEY }}" >> .env
+            echo "REDIS_HOST_PASSWORD=${{ secrets.REDIS_KEY }}" > ~/gluv/docker_redis/.env
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r ./requirements.txt
+            python manage.py makemigrations
+            python manage.py migrate
+            nohup uvicorn gluv.asgi:application --host 0.0.0.0 --port 8000 > output.log 2>&1 &
+            nohup celery -A gluv worker > task_worker.log 2>&1 &
+            nohup celery -A gluv beat > task_beat.log 2>&1 &
+            cd ~/gluv/docker_redis
+            sudo docker-compose up -d
+          
