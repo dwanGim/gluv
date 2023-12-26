@@ -76,7 +76,7 @@ class ScheduleView(viewsets.ViewSet):
         for member in team_members:
             Notification.objects.create(
                 user=member.user,
-                message=f"{schedule} 일정이 변경되었습니다: ",
+                message=f"{schedule}이 변경되었습니다: ",
             )
 
         # generate_response를 이용하여 리턴

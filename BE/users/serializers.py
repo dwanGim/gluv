@@ -35,3 +35,11 @@ class UserVerifySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('password')
+
+class UserSummarySerializer(serializers.ModelSerializer):
+    '''
+    댓글, 게시글 등 유저 정보 요약을 위한 Serializer
+    '''
+    class Meta:
+        model = User
+        fields = ('id', 'nickname', 'profile_image')
