@@ -3,6 +3,9 @@ from datetime import timedelta
 from urllib.parse import quote
 from pathlib import Path
 from dotenv import load_dotenv
+from celery import Celery
+from celery.schedules import crontab
+from urllib.parse import quote
 
 # BASE DIR 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +47,8 @@ INSTALLED_APPS = [
     'books',
     # Channels
     'channels',
+    # Celery Task
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +151,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'users.User'
 
 # 환경 변수에서 Redis 비밀번호 조회
-REDIS_KEY = os.getenv("REDIS_KEY")
+REDIS_KEY = os.getenv("REDIS_KEY", "")
 
 # Django Channels 설정
 CHANNEL_LAYERS = {
@@ -175,5 +180,25 @@ SPECTACULAR_SETTINGS = {
             },
         },
         'persistAuthorization': True,
+    },
+}
+
+REDIS_KEY = os.getenv("REDIS_KEY")
+
+# Celery Broker URL과 Result Backend URL
+CELERY_BROKER_URL = f'redis://:{quote(REDIS_KEY)}@localhost:6379/0'
+CELERY_RESULT_BACKEND = f'redis://:{quote(REDIS_KEY)}@localhost:6379/0'
+
+# Celery 메시지 형식 지정
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Celery Beat Task 스케줄 설정
+# 1분마다 books.tasks.fetch_recent_book 실행
+CELERY_BEAT_SCHEDULE = {
+    'fetch_recent_book': {
+        'task': 'books.tasks.fetch_recent_book',
+        'schedule': timedelta(minutes=1),
     },
 }
