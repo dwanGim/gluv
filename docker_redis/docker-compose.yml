@@ -13,6 +13,6 @@ services:
       - "name=redis"
       - "mode=standalone"
     restart: always
-    command: redis-server /usr/local/conf/redis.conf
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD"
     env_file:
       - .env
