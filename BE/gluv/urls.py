@@ -16,20 +16,20 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('books/', include("books.urls")),
-    path('chatrooms/', include("chatrooms.urls")),
-    path('comments/', include("comments.urls")),
-    path('likes/', include("likes.urls")),
-    # path('messages/', include("messages.urls")),
-    path('notifications/', include("notifications.urls")),
-    path('posts/', include("posts.urls")),
-    path('recruits/', include("recruits.urls")),
-    path('reports/', include("reports.urls")),
-    path('schedules/', include("schedules.urls")),
-    path('teams/', include("teams.urls")),
-    path('users/', include("users.urls")),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),   # 토큰발급/재생성
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),      # 토큰 검증
+    path('api/v1/books/', include("books.urls")),
+    path('api/v1/chatrooms/', include("chatrooms.urls")),
+    path('api/v1/comments/', include("comments.urls")),
+    path('api/v1/likes/', include("likes.urls")),
+    # path('api/v1/messages/', include("messages.urls")),
+    path('api/v1/notifications/', include("notifications.urls")),
+    path('api/v1/posts/', include("posts.urls")),
+    path('api/v1/recruits/', include("recruits.urls")),
+    path('api/v1/reports/', include("reports.urls")),
+    path('api/v1/schedules/', include("schedules.urls")),
+    path('api/v1/teams/', include("teams.urls")),
+    path('api/v1/users/', include("users.urls")),
+    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),   # 토큰발급/재생성
+    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),      # 토큰 검증
 ]
 
 # Media url 패턴 추가

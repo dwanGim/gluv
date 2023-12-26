@@ -24,6 +24,7 @@ jobs:
             sudo apt install -y python3-wheel
             sudo apt install -y setuptools
             sudo apt install -y celery
+            sudo pip install -y 'uvicorn[standard]'
             sudo python3 -m pip install --no-cache-dir --upgrade pip
             sudo apt install -y build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
             sudo curl -fsSL https://get.docker.com -o get-docker.sh
