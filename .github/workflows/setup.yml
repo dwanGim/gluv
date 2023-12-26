@@ -42,8 +42,8 @@ jobs:
             chmod 600 ~/.ssh/id_rsa
             ssh-keyscan -t rsa ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }} 'mkdir -p ~/test'
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./* ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }}:~/test
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }} 'mkdir -p ~/gluv'
+            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./* ${{ secrets.AWS_SSH_USER }}@${{ secrets.SERVER_HOST }}:~/gluv
 
       - name: 배포
         uses: appleboy/ssh-action@master
