@@ -4,6 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from recruits.models import RecruitmentPost
 from posts.models import CommunityPost
@@ -12,6 +13,7 @@ from .models import Comment
 from .serializers import CommentSerializer, CommentCreateSerializer
 from .permissions import IsOwner
 
+User = get_user_model()
 
 class CommentPagination(PageNumberPagination):
     '''
@@ -88,7 +90,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             )
         
         if to_user:
-            to_user_instance = get_object_or_404(Comment, id=to_user)
+            to_user_instance = get_object_or_404(User, id=to_user)
             comment.to_user = to_user_instance
         if post_id:
             post_instance = get_object_or_404(CommunityPost, id=post_id)
