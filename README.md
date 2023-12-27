@@ -21,6 +21,7 @@ FE Repository : https://github.com/OrmiFinal/gluv-FE
 |김재민|이형섭|강성웅|김동완|
 |:---:|:---:|:---:|:---:|
 |내용|내용|내용|내용|
+|내용|내용|내용|내용|
 
 ## <목차>
 [1. 요구사항 명세](#요구사항-명세)
@@ -114,36 +115,38 @@ Uvicorn - 배포
 
 ## <프로젝트 구조 및 개발일정>
 
-### 이후 정리된 기획문서로 스크린샷 추가
-
 ### [WBS]
-https://docs.google.com/spreadsheets/d/1RHC8jjLkRu8uZMWw4TvBYeCkS36E1OPYt3RTXPPudAk/edit#gid=1709744959
+![WBS](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/c308179e-848e-4753-8b7f-c9145cfcd28d)
 
 ### [Mindmap]
-https://www.mindmeister.com/app/map/3073850107?t=rw1yfG9P7w
+![mindmap](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/bea6795d-f04a-4f37-9743-4a3f1b99e0a2)
 
 ### [ERD]
-![erd](https://github.com/jmkim648/test/assets/22714585/5c377543-5b33-4e38-a605-a07d2853d2cf)  
-https://www.erdcloud.com/d/RTXv7pftrz3wkBWfQ
+![erd](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/dd137cc6-827c-44b6-b549-244ac58755a1)
 
 ### [Folder Tree]
 추후 작성
 
 ### [Sequence Diagram]
-https://app.diagrams.net/#G1-BYGlJ5SfI52E6yEfLoS7qUKThqh-JP_  
-배치, 정렬 필요
+![시퀀스다이어그램](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/fac8e544-d834-47b5-a872-00ef918ab2a2)
+위키 작성 후 링크 추가
 
-### [WireFrame]
-<!-- 기능명세 동시진행한 것 어필? -->
+### [WireFrame 및 기능설계]
 |화면 설계|기능 설계|
 |------|------|
-|![wireframe](https://github.com/jmkim648/test/assets/22714585/5b1fa597-41e5-4d6c-afc0-be823ce06b7b)|![wireframe_with_memo](https://github.com/jmkim648/test/assets/22714585/dcf08907-136a-4f23-ac38-7f1c18d88e14)|
+|![wireframe](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/ff9a582e-8fd2-4ec9-9eed-b66467341c90)|![wireframe_with_memo](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/6a03ae3b-b711-4133-b88a-a157669fd52b)|
 
-https://ovenapp.io/view/jTIlBYAvkFxRd4RxlPTLERLLyP2Sdwe1/E61u1
+[카카오오븐](https://ovenapp.io/view/jTIlBYAvkFxRd4RxlPTLERLLyP2Sdwe1/B6a8N)링크
+
 
 ### [URL명세]
-https://hyungseobu.notion.site/hyungseobu/gluv-API-Endpoint-f19c577545254fe1b6c4550a028b6870  
-URL명세 확정되면 MD의 테이블 형식 혹은 wiki에 작성 후 대체
+![image](https://github.com/OrmiFinal/gluv/assets/22714585/6019aa6f-5c81-4381-a1bb-ba109850fd6f)
+
+[URL명세 GitHub Wiki](https://github.com/OrmiFinal/gluv/wiki/URL-%EB%AA%85%EC%84%B8)
+
+### [서비스 아키텍처]
+
+- 내용
 
 <div align="right">
 
@@ -152,14 +155,15 @@ URL명세 확정되면 MD의 테이블 형식 혹은 wiki에 작성 후 대체
 </div>
 
 ## <API 명세>
- 
-1차 [설계],  
-2차 테스트 중 만든 [URL명세Wiki]   
-3차 [스웨거]를 활용한 최종본
+![image](https://github.com/OrmiFinal/gluv/assets/22714585/269a1416-d5b5-450e-803d-27373913ecce)
+1차 [API 설계](https://github.com/OrmiFinal/gluv/wiki/1%EC%B0%A8-API-%EB%AA%85%EC%84%B8),  
 
-[설계]: https://hyungseobu.notion.site/hyungseobu/gluv-API-Endpoint-f19c577545254fe1b6c4550a028b6870 
-[URL명세Wiki]: https://github.com/OrmiFinal/gluv/wiki/2%EC%B0%A8-API-%EB%AA%85%EC%84%B8
-[스웨거]: https://github.com/OrmiFinal/gluv/wiki/2%EC%B0%A8-API-%EB%AA%85%EC%84%B8
+![image](https://github.com/OrmiFinal/gluv/assets/22714585/2e5108f2-0edf-4735-805d-3963c3be92d7)
+
+2차 테스트 중 만든 [2차 API 명세](https://github.com/OrmiFinal/gluv/wiki/2%EC%B0%A8-API-%EB%AA%85%EC%84%B8),   
+3차 [스웨거]()를 활용한 최종본
+
+- 내용
 
 <div align="right">
 
@@ -171,22 +175,51 @@ URL명세 확정되면 MD의 테이블 형식 혹은 wiki에 작성 후 대체
 
 ### [메인화면]
 
+ - 내용
+ 
 ### [모집게시글 작성]
+
+ - 내용
+
+### [모임, 일정 관리]
+
+ - 내용
+
+### [모집게시글 조회 및 검색]
+
+ - 내용
 
 ### [모임 가입 신청]
 
+ - 내용
+
 ### [모임 가입 신청 관리]
 
-### [모임 정보 관리]
+ - 내용
+
+### [모임 구성원 관리]
+
+ - 내용
 
 ### [모임 단체 채팅]
 
-### [자유게시글 작성]
+ - 내용
+
+### [커뮤니티게시글 조회 및 검색]
+
+ - 내용
+
+### [커뮤니티게시글 작성]
+
+ - 내용
 
 ### [게시글 좋아요, 신고]
 
+ - 내용
+
 ### [알림]
 
+ - 내용
 
 
 <div align="right">
@@ -195,15 +228,41 @@ URL명세 확정되면 MD의 테이블 형식 혹은 wiki에 작성 후 대체
 
 </div>
 
-## <기능 설명>
+## <기능 시연>
 
-### [로그인 및 프로필]
+### [회원가입, 로그인 및 프로필 확인]
 
-### [신간 정보]
+- 내용
 
-### [화제의 게시글, 최신 모집글, 화제의 모집글]
+### [모임을 만들 사용자가 모집글 작성]
 
-### [게시글 정보 수정 및 삭제]
+- 내용
+
+### [모임의 리더가 모임 정보 수정]
+
+- 내용
+
+### [신청할 사용자가 모집글을 읽고 가입 신청]
+
+- 내용
+
+### [모임의 리더가 신청인원 관리 메뉴에서 가입을 수락]
+
+- 내용
+
+### [모임 채팅방에서 채팅]
+
+- 내용
+
+### [커뮤니티 글 작성, 댓글 작성]
+
+- 내용
+
+### [게시글 추천]
+
+- 내용
+
+### [모임의 구성원 강퇴 및 모임 삭제]
 
 
 <div align="right">
