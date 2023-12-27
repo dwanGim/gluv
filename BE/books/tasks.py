@@ -23,6 +23,9 @@ def fetch_recent_book():
         published_date = book_data.get('pubDate', '')
         content = book_data.get('description', None)
 
+        if book_image and ('coversum' in book_image):
+            book_image = book_image.replace('coversum', 'cover500')
+
         _, created = Book.objects.get_or_create(
             title=title,
             defaults={
