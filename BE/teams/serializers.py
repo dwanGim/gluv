@@ -10,15 +10,24 @@ class TeamSerializer(serializers.ModelSerializer):
     '''
     Team 모델 Serializer
     '''
+    recruit_id = serializers.SerializerMethodField()
+
     class Meta:
         model = Team
-        fields = ['id', 'name', 'category', 'is_closed', 'max_attendance', 'current_attendance', 'introduce', 'image']
+        fields = ['id', 'name', 'category', 'is_closed', 'max_attendance', 'current_attendance', 'introduce', 'image', 'recruit_id']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         if not instance.image:
             ret['image'] =  '/media/defalut_team.png'
         return ret
+    
+    def get_recruit_id(self, obj):
+        post = RecruitmentPost.objects.filter(team=obj).first()
+        if not post:
+            return None
+        
+        return post.id
 
 class TeamMemberSerializer(serializers.ModelSerializer):
     '''
