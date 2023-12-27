@@ -12,7 +12,7 @@ class TeamSerializer(serializers.ModelSerializer):
     '''
     class Meta:
         model = Team
-        fields = ['id', 'name', 'category', 'is_closed', 'location', 'max_attendance', 'current_attendance', 'introduce', 'image']
+        fields = ['id', 'name', 'category', 'is_closed', 'max_attendance', 'current_attendance', 'introduce', 'image']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -24,17 +24,9 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     '''
     TeamMember 모델 Serializer
     '''
-    nickname = serializers.SerializerMethodField()
     class Meta:
         model = TeamMember
         fields = ['user', 'nickname', 'team', 'is_leader', 'is_approved']
-
-    def get_nickname(self, obj):
-        '''
-        닉네임 정보 제공
-        '''
-        return obj.user.nickname
-
 
 class TeamMemberChangeSerializer(serializers.ModelSerializer):
     '''
@@ -75,24 +67,29 @@ class TeamDetailSerializer(serializers.ModelSerializer):
         team_id = self.context.get('team_id')
         user = self.context.get('user')
 
-        team_member_data = TeamMember.objects.filter(team=obj, is_approved=False).count()
-        is_leader = TeamMember.objects.filter(team=obj, user=user, is_leader=True).exists()
-        schedule = Schedule.objects.filter(team_id=team_id).first()
+        if not hasattr(obj,'related_data'):
+            obj.schedule = Schedule.objects.filter(team_id=team_id).first()
+            obj.is_leader = TeamMember.objects.filter(team=obj, user=user, is_leader=True).exists()
+            obj.applied_member_count = TeamMember.objects.filter(team=obj, is_approved=False).count()
+            obj.recruit_post = RecruitmentPost.objects.filter(team=obj).first()
+            obj.chat_room = ChatRoom.objects.filter(team=obj).first()
 
-        return {
-            'applied_member_count': team_member_data,
-            'is_leader': is_leader,
-            'schedule': schedule,
-        }
+            obj.related_data = {
+                'applied_member_count': obj.applied_member_count,
+                'is_leader': obj.is_leader,
+                'schedule': obj.schedule,
+                'recruit_post': obj.recruit_post,
+                'chat_room': obj.chat_room,
+            }
+            
+        return obj.related_data
 
     def get_applied_member(self, obj):
-        data = self.get_related_data(obj)
-        return data['applied_member_count']
-
+        return self.get_related_data(obj)['applied_member_count']
+    
     def get_is_leader(self, obj):
-        data = self.get_related_data(obj)
-        return data['is_leader']
-
+        return self.get_related_data(obj)['is_leader']
+    
     def get_frequency(self, obj):
         data = self.get_related_data(obj)
         return data['schedule'].frequency if data['schedule'] else None
@@ -126,22 +123,22 @@ class TeamDetailSerializer(serializers.ModelSerializer):
         return data['schedule'].end_time if data['schedule'].end_time is not None else None
     
     def get_recruit_id(self, obj):
-        exists = RecruitmentPost.objects.filter(team=obj).exists()
-        if not exists:
+        data = self.get_related_data(obj)
+        if not data['recruit_post']:
             return None
         
-        return RecruitmentPost.objects.filter(team=obj).first().id
+        return data['recruit_post'].id
     
     def get_chatroom_id(self, obj):
-        exists = ChatRoom.objects.filter(team=obj).exists()
-        if not exists:
+        data = self.get_related_data(obj)
+        if not data['chat_room']:
             return None
         
-        return ChatRoom.objects.filter(team=obj).first().id
+        return data['chat_room'].id
     
     def get_location(self, obj):
-        exists = RecruitmentPost.objects.filter(team=obj).exists()
-        if not exists:
+        data = self.get_related_data(obj)
+        if not data['recruit_post']:
             return None
         
-        return RecruitmentPost.objects.filter(team=obj).first().region
+        return data['recruit_post'].region

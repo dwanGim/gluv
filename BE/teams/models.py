@@ -28,7 +28,6 @@ class Team(models.Model):
     name = models.CharField(max_length=20, null=True, blank=True)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
     is_closed = models.BooleanField(default=False)
-    location = models.TextField(null=True, blank=True)
     max_attendance = models.IntegerField()
     current_attendance=models.IntegerField(default=0)
     introduce = models.TextField(null=True, blank=True)
@@ -37,7 +36,6 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class TeamMember(models.Model):
     '''
@@ -58,3 +56,7 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return f'{self.team} 모임의 구성원 {self.user}'
+    
+    @property
+    def nickname(self):
+        return self.user.nickname
