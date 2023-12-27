@@ -181,11 +181,14 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
         DELETE : 모집게시글에 가입 신청한 유저가 신청을 취소
         '''
         post = self.get_object()
-        user = request.user.pk
+        user = request.user.id
         team = post.team 
 
         if request.method == 'GET':
-            queryset = TeamMember.objects.filter(team=team, is_approved=False)
+            # pk : 모집 게시글 ID
+            recruit_id = pk
+            post = RecruitmentPost.objects.get(id=recruit_id)
+            queryset = TeamMember.objects.filter(team=post.team, is_approved=False)
             serializer = TeamMemberSerializer(queryset, many=True)
             return Response(serializer.data)
         
@@ -194,6 +197,7 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
             # 이미 신청한 member인지 판별
             if member:
                 return Response({'detail': '이미 신청한 멤버입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
             data = {'user': user, 'team': team.id, 'is_leader': False, 'is_approved': False}
             serializer = TeamMemberSerializer(data=data)
             if serializer.is_valid():
