@@ -50,7 +50,7 @@ class RecruitmentPostViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         elif self.action in ['create', 'apply']:
             return [permissions.IsAuthenticated()]
-        elif self.action in ['partial_update']:
+        elif self.action in ['partial_update', 'destroy']:
             return [permissions.IsAuthenticated(), IsLeaderOrReadOnly()]
         return super().get_permissions()
     
