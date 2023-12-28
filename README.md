@@ -19,8 +19,8 @@ FE Repository : https://github.com/OrmiFinal/gluv-FE
 ### 팀원 소개
 |김재민|이형섭|강성웅|김동완|
 |:---:|:---:|:---:|:---:|
-|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/f7748427-537b-49e4-8e5f-d61539abb0e0" alt="김재민" width="150" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/118d18a1-8ddc-476c-9040-c7a9328039ae" alt="이형섭" width="150" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/ca2b462d-110f-4b38-820f-d5a34eeb604e" alt="강성웅" width="150" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/1851d9f7-6f31-49f3-9fcd-1a504b418992" alt="김동완" width="150" height="150">|
-|<p align="left"> - 화면 설계 및 기능 명세 <br> - Recruit, Team, Schedule <br> - 프로젝트 진행 관리, 작업 배분|<p align="left"> - URL 및 API 설계 <br> - Post, Book, Report, Notification <br> - Swagger, Redis, ChatRoom <br> - 배포 리드 |<p align="left"> - 시퀀스 다이어그램 <br> - Like <br> - Frontend React 세팅 <br> - Design Layout 적용|<p align="left"> - WBS 작성 <br> - User, Comment <br> - Auth 구현 및 Token 핸들링 <br> - API 호출 시 Error 핸들링|
+|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/f7748427-537b-49e4-8e5f-d61539abb0e0" alt="김재민" width="150" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/118d18a1-8ddc-476c-9040-c7a9328039ae" alt="이형섭" width="150" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/ca2b462d-110f-4b38-820f-d5a34eeb604e" alt="강성웅" width="180" height="150">|<img src="https://github.com/OrmiFinal/gluv/assets/22714585/1851d9f7-6f31-49f3-9fcd-1a504b418992" alt="김동완" width="150" height="150">|
+|<p align="left"> - 화면 설계 및 기능 명세 <br> - Recruit, Team, Schedule <br> - 프로젝트 진행 관리, <br> &nbsp;&nbsp; 작업 배분|<p align="left"> - URL 및 API 설계 <br> - Post, Book, Report, <br> &nbsp;&nbsp; Notification <br> - Swagger, Redis, ChatRoom <br> - 배포 리드 |<p align="left"> - 시퀀스 다이어그램 <br> - Like <br> - Frontend React 세팅 <br> - Design Layout 적용|<p align="left"> - WBS 작성 <br> - User, Comment <br> - Auth 구현 및 Token <br>&nbsp;&nbsp; 핸들링 <br> - API 호출 시 Error <br> &nbsp;&nbsp;핸들링|
 
 
 ## <목차>
@@ -188,13 +188,13 @@ FE Repository : https://github.com/OrmiFinal/gluv-FE
 
 ## <API 명세>
 
-#### 1차 API 설계
+### [1차 API 설계]
 ![image](https://github.com/OrmiFinal/gluv/assets/22714585/269a1416-d5b5-450e-803d-27373913ecce)
 
-### 2차 API 명세
+### [2차 API 명세]
 ![image](https://github.com/OrmiFinal/gluv/assets/22714585/2e5108f2-0edf-4735-805d-3963c3be92d7)
 
-### 최종 API 명세
+### [최종 API 명세]
 ![image](https://github.com/OrmiFinal/gluv/assets/22714585/b6c242ba-e311-4c74-9854-e46a3aa1af6e)
 
 
