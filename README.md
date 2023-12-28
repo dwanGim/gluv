@@ -2,9 +2,10 @@
 
 &nbsp;이스트소프트에서 주관하는 백엔드 개발자 부트캠프 '오르미'에서 팀 프로젝트로 만든 서비스입니다.
 
-서비스 설명, 조이름 설명
+&nbsp;글을 사랑하는 사람들의 모임 모집 플랫폼 gluv입니다. 모임 활동을 하고 싶은 사용자가 플랫폼을 사용해 모임을 만들고, 구성원들과 함께 대화할 수 있는 서비스를 구현하였습니다.  
+모집글과 모임 정보를 통해 모임을 관리, 활동할 수 있으며 모든 사용자들이 커뮤니티 게시판을 통해 창작물을 올리고, 의견을 교환할 수 있는 장을 마련하였습니다.
 
-
+&nbsp;Backend 서버와 Frontend 서버 별개로 개발되었으며, Backend는 Django, Frontend는 React를 사용하였습니다.
 
 &nbsp;개발 기간은 12.8 ~ 12.28 총 21일이었으며 4인 1조의 협업으로 진행되었습니다.
 
@@ -13,14 +14,12 @@ GitHub Repository : https://github.com/OrmiFinal/gluv
 
 FE Repository : https://github.com/OrmiFinal/gluv-FE
 
-배포 URL
-
-테스트 계정
+배포 URL : http://43.202.4.135/
 
 팀원 소개
 |김재민|이형섭|강성웅|김동완|
 |:---:|:---:|:---:|:---:|
-|내용|내용|내용|내용|
+|![김재민](https://github.com/jmkim648/test/assets/22714585/ff9898bf-9f26-405a-8648-d513ff850bbc)|![강성웅님](https://github.com/jmkim648/test/assets/22714585/19910939-ee10-4ff9-b91a-17a9ab974025)|내용|
 |내용|내용|내용|내용|
 
 ## <목차>
@@ -74,16 +73,6 @@ FE Repository : https://github.com/OrmiFinal/gluv-FE
 </div>
 
 ## <개발기술 및 환경>
-Uvicorn - 배포
-
-<img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white"/>
-<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white"/>
-<img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white"/>
-
-
-<img src="https://img.shields.io/badge/Celery-37814A?style=flat-square&logo=celery&logoColor=white"/>
-<img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat-square&logo=GitHub Actions&logoColor=white"/>
-<img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white"/>
 
 ### [Frontend]
 <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white"/>
@@ -95,12 +84,19 @@ Uvicorn - 배포
 ### [Backend]
 <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white"/>
 <img src="https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white"/>
+<img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white"/>
+<img src="https://img.shields.io/badge/Celery-37814A?style=flat-square&logo=celery&logoColor=white"/>
 
 ### [DB]
 <img src="https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white"/>
 
 ### [Deployment]
 <img src="https://img.shields.io/badge/NGINX-009639?style=flat-square&logo=nginx&logoColor=white"/>
+<img src="https://img.shields.io/badge/Gunicorn-499848?style=flat-square&logo=Gunicorn&logoColor=white"/>
+<img src="https://img.shields.io/badge/Uvicorn-6428B4?style=flat-square&logo=Gunicorn&logoColor=white"/>
+<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat-square&logo=GitHub Actions&logoColor=white"/>
+<img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white"/>
 
 ### [Management]
 <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=white"/>
@@ -125,18 +121,21 @@ Uvicorn - 배포
 ![erd](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/dd137cc6-827c-44b6-b549-244ac58755a1)
 
 ### [Folder Tree]
-추후 작성
+|Backend|Frontend|
+|---|---|
+|![image](https://github.com/jmkim648/test/assets/22714585/76bf158c-cf25-47d9-88ff-9c2c75df141b)|![image](https://github.com/jmkim648/test/assets/22714585/9bc70f86-ec93-4878-a271-3946fcbb7b81)|
 
 ### [Sequence Diagram]
 ![시퀀스다이어그램](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/fac8e544-d834-47b5-a872-00ef918ab2a2)
-위키 작성 후 링크 추가
+[시퀀스 다이어그램](https://app.diagrams.net/#G1-BYGlJ5SfI52E6yEfLoS7qUKThqh-JP_)
+[시퀀스 다이어그램 Wiki](https://github.com/OrmiFinal/gluv/wiki/Sequence-Diagram)
 
 ### [WireFrame 및 기능설계]
 |화면 설계|기능 설계|
 |------|------|
 |![wireframe](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/ff9a582e-8fd2-4ec9-9eed-b66467341c90)|![wireframe_with_memo](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/6a03ae3b-b711-4133-b88a-a157669fd52b)|
 
-[카카오오븐](https://ovenapp.io/view/jTIlBYAvkFxRd4RxlPTLERLLyP2Sdwe1/B6a8N)링크
+[카카오오븐 Wireframe](https://ovenapp.io/view/jTIlBYAvkFxRd4RxlPTLERLLyP2Sdwe1/B6a8N)
 
 
 ### [URL명세]
@@ -146,7 +145,7 @@ Uvicorn - 배포
 
 ### [서비스 아키텍처]
 
-- 내용
+![아키텍처](https://github.com/OrmiFinal/gluv/assets/22714585/73e014c3-b8fe-4bb6-a2df-0b524a71739f)
 
 <div align="right">
 
@@ -156,12 +155,13 @@ Uvicorn - 배포
 
 ## <API 명세>
 ![image](https://github.com/OrmiFinal/gluv/assets/22714585/269a1416-d5b5-450e-803d-27373913ecce)
-1차 [API 설계](https://github.com/OrmiFinal/gluv/wiki/1%EC%B0%A8-API-%EB%AA%85%EC%84%B8),  
+1차 [API 설계](https://github.com/OrmiFinal/gluv/wiki/1%EC%B0%A8-API-%EB%AA%85%EC%84%B8) 
 
 ![image](https://github.com/OrmiFinal/gluv/assets/22714585/2e5108f2-0edf-4735-805d-3963c3be92d7)
+2차 테스트 중 만든 [2차 API 명세](https://github.com/OrmiFinal/gluv/wiki/2%EC%B0%A8-API-%EB%AA%85%EC%84%B8)
 
-2차 테스트 중 만든 [2차 API 명세](https://github.com/OrmiFinal/gluv/wiki/2%EC%B0%A8-API-%EB%AA%85%EC%84%B8),   
-3차 [스웨거]()를 활용한 최종본
+![image](https://github.com/jmkim648/test/assets/22714585/3ea9174b-36d1-4ab1-8241-f1cb8af49dd1)
+3차 스웨거를 활용한 [최종 API 명세](https://github.com/OrmiFinal/gluv/wiki/3%EC%B0%A8-API-%EB%AA%85%EC%84%B8-(Swagger))
 
 - 내용
 
@@ -291,12 +291,30 @@ Uvicorn - 배포
 ## <개발 회고>
 
 ### [김재민]
+```
+ 팀원분의 작업이 끝나면 다음으로 해야 할 것을 배분해드리는 일을 하면서 고민이 많았습니다. 지금 맡은 작업이 버겁거나 오래걸릴 것 같지는 않은 지, 해당 기능에 대한 요구사항이 제대로 전달되었는지 확신이 들지 않았습니다. 프로젝트가 끝나갈 때쯤 되어서야 이 분이 어떤 작업에 더 편하고 능숙하신 지 파악하고, 보다 더 명확한 요구사항을 전달할 수 있게 되었습니다. 협업을 할 때는 의사소통이 가장 중요하다는 것, 유능한 관리자가 있어야 한다는 것을 실감한 좋은 기회였습니다.
+
+ 혼자서 프로젝트를 진행할 때는 ‘와, 이 기능을 써봤다! 익숙해졌다!’정도의 배움이었다면, 협업을 하면서 그 이상의 것을 배웠다고 생각합니다. 제가 생각했던 것과는 다른 방향으로 구현되는 기능들이나, 더 효율적인 코드들을 보고 습득하는 것은 이전에 느껴보지 못했던 새로운 즐거움이었습니다.
+```
 
 ### [이형섭]
+```
+ 프로젝트를 시작하기 전에는 수업을 통해 지식을 배우고 프로젝트를 통해 실제로 직접 개발을 경험하며 많은 것을 배울 수 있었습니다.
+
+ 서비스 설계부터 구현, 테스트, 배포까지의 과정을 거치면서 각 단계마다 직면하는 문제들을 해결하고 성장할 수 있었습니다.
+```
 
 ### [강성웅]
+```
+ 요구 사항 정의, 설계, 구현, 테스트, 배포 등의 단계를 경험하면서 전반 적인 개발을 이해할 수 있었습니다.
+
+ 프로젝트 중 깃을 사용하면서 주로 병합 시 버그가 발생하는 어려움이 있었습니다. 이부분은 다른 팀원들에게 배워서 더욱 좋아졌습니다.
+```
 
 ### [김동완]
+```
+ 이번 팀 프로젝트를 통해 잊고 있던 개발의 재미를 다시 한 번 느꼈습니다. 설계부터 배포까지 협업의 과정을 통해 성장할 수 있었습니다. 그리고 그 모든 과정에 함께해주신 팀원 분들과 강사님들께 감사드립니다. DRF의 능력을 작게나마 시험해본 경험을 양분삼아 더 많이 오래 개발해나가고 싶습니다.
+```
 
 
 <div align="right">
