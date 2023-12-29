@@ -127,7 +127,7 @@ FE Repository : https://github.com/OrmiFinal/gluv-FE
 ![mindmap](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/bea6795d-f04a-4f37-9743-4a3f1b99e0a2)
 
 ### [ERD]
-![erd](https://github.com/jmkim648/Ormi-Chatbot-BE/assets/22714585/dd137cc6-827c-44b6-b549-244ac58755a1)
+![erd](https://github.com/OrmiFinal/gluv/assets/22714585/6188611d-a9bc-48ab-8b2d-e83cbf7b5411)
 
 ### [Folder Tree]
 |Backend|Frontend|
